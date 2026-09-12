@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login or create your ShopNova account to enjoy a personalized shopping experience.">
+  <title>Login — ShopNova</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* Left Panel */
+    .auth-left {
+      background: linear-gradient(135deg, #0A0B0E 0%, #141720 50%, #1A1E2E 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--space-12) var(--space-16);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-left-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .auth-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.25;
+    }
+
+    .auth-orb-1 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #6C63FF 0%, transparent 70%);
+      top: -150px; right: -100px;
+    }
+
+    .auth-orb-2 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #EC4899 0%, transparent 70%);
+      bottom: -100px; left: -50px;
+    }
+
+    .auth-orb-3 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, #43E97B 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .auth-left-content { position: relative; z-index: 1; }
+
+    .auth-logo {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      margin-bottom: var(--space-8);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .auth-logo-icon {
+      width: 44px; height: 44px;
+      background: var(--grad-primary);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+
+    .auth-headline {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 3vw, 3rem);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: var(--space-5);
+    }
+
+    .auth-subheadline {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: var(--space-10);
+    }
+
+    .auth-features {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .auth-feature {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .auth-feature-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .auth-feature-text .title { font-weight: 700; font-size: var(--text-sm); }
+    .auth-feature-text .desc { font-size: var(--text-xs); color: var(--text-muted); margin-top: 2px; }
+
+    /* Right Panel */
+    .auth-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--space-12) var(--space-16);
+      background: var(--bg-800);
+      overflow-y: auto;
+    }
+
+    .auth-form-wrap { max-width: 400px; width: 100%; margin: 0 auto; }
+
+    .auth-tabs {
+      display: flex;
+      background: var(--bg-700);
+      border-radius: var(--radius-full);
+      padding: 4px;
+      margin-bottom: var(--space-8);
+      border: 1px solid var(--glass-border);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-full);
+      text-align: center;
+      font-size: var(--text-sm);
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all var(--transition-base);
+    }
+
+    .auth-tab.active {
+      background: var(--grad-primary);
+      color: white;
+      box-shadow: var(--shadow-brand);
+    }
+
+    .auth-form { display: none; }
+    .auth-form.active { display: block; animation: fadeInUp 0.4s ease forwards; }
+
+    .auth-form h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: 800;
+      margin-bottom: var(--space-2);
+    }
+
+    .auth-form .subtitle {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      margin-bottom: var(--space-8);
+    }
+
+    /* Social Login */
+    .social-login {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .social-login-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-5);
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: var(--text-primary);
+    }
+
+    .social-login-btn:hover {
+      background: var(--glass-bg-hover);
+      border-color: var(--glass-border-hover);
+      transform: translateY(-1px);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .divider span { font-size: var(--text-xs); color: var(--text-muted); white-space: nowrap; }
+
+    .input-icon-wrap {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      pointer-events: none;
+    }
+
+    .input-icon-wrap .form-control {
+      padding-left: calc(var(--space-4) + 28px);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--text-muted);
+      transition: color var(--transition-fast);
+    }
+
+    .password-toggle:hover { color: var(--text-primary); }
+
+    .strength-bar {
+      height: 4px;
+      border-radius: var(--radius-full);
+      margin-top: var(--space-2);
+      background: var(--bg-400);
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width var(--transition-base), background var(--transition-base);
+      width: 0;
+    }
+
+    .strength-text {
+      font-size: 11px;
+      margin-top: 4px;
+      color: var(--text-muted);
+    }
+
+    .terms-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: var(--space-4);
+      line-height: 1.6;
+    }
+
+    .terms-text a { color: var(--brand-primary); }
+
+    .demo-hint {
+      background: rgba(108, 99, 255, 0.1);
+      border: 1px solid rgba(108, 99, 255, 0.25);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-5);
+    }
+
+    .demo-hint h4 { font-size: var(--text-sm); font-weight: 700; margin-bottom: var(--space-2); }
+
+    .demo-cred {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+    }
+
+    .demo-btn {
+      font-size: 11px;
+      color: var(--brand-primary);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-weight: 600;
+    }
+
+    .demo-btn:hover { text-decoration: underline; }
+
+    @media (max-width: 900px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-left { display: none; }
+      .auth-right { min-height: 100vh; }
+    }
+  </style>
+</head>
+<body style="background:var(--bg-900)">
+
+  <div class="auth-page">
+
+    <!-- Left Visual Panel -->
+    <div class="auth-left animate-fadeIn">
+      <div class="auth-left-bg">
+        <div class="auth-orb auth-orb-1"></div>
+        <div class="auth-orb auth-orb-2"></div>
+        <div class="auth-orb auth-orb-3"></div>
+      </div>
+      <div class="auth-left-content">
+        <a href="index.html" class="auth-logo">
+          <div class="auth-logo-icon">⚡</div>
+          <span class="grad-text">ShopNova</span>
+        </a>
+        <h1 class="auth-headline">
+          Your Premium<br>
+          <span class="grad-text">Shopping</span><br>
+          Destination
+        </h1>
+        <p class="auth-subheadline">
+          Join millions of shoppers who trust ShopNova for the best deals, fastest delivery, and premium quality.
+        </p>
+        <div class="auth-features">
+          <div class="auth-feature">
+            <div class="auth-feature-icon" style="background:rgba(108,99,255,0.15)">⚡</div>
+            <div class="auth-feature-text">
+              <div class="title">Lightning Fast Delivery</div>
+              <div class="desc">Get your orders in 2-5 days, guaranteed</div>
+            </div>
+          </div>
+          <div class="auth-feature">
+            <div class="auth-feature-icon" style="background:rgba(67,233,123,0.15)">💰</div>
+            <div class="auth-feature-text">
+              <div class="title">Earn Reward Points</div>
+              <div class="desc">Get points on every purchase, redeem for discounts</div>
+            </div>
+          </div>
+          <div class="auth-feature">
+            <div class="auth-feature-icon" style="background:rgba(255,215,0,0.15)">🔒</div>
+            <div class="auth-feature-text">
+              <div class="title">100% Secure Shopping</div>
+              <div class="desc">SSL encrypted, PCI-compliant, buyer protection</div>
+            </div>
+          </div>
+          <div class="auth-feature">
+            <div class="auth-feature-icon" style="background:rgba(255,107,53,0.15)">🎁</div>
+            <div class="auth-feature-text">
+              <div class="title">Exclusive Member Deals</div>
+              <div class="desc">Access to members-only prices and early sales</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Form Panel -->
+    <div class="auth-right">
+      <div class="auth-form-wrap animate-fadeInRight">
+
+        <!-- Mobile Logo -->
+        <a href="index.html" class="auth-logo" style="display:none;justify-content:center;margin-bottom:32px" id="mobile-logo">
+          <div class="auth-logo-icon">⚡</div>
+          <span class="grad-text">ShopNova</span>
+        </a>
+
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')" role="tab">Sign In</div>
+          <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')" role="tab">Create Account</div>
+        </div>
+
+        <!-- Login Form -->
+        <div class="auth-form active" id="form-login">
+          <h2>Welcome Back</h2>
+          <p class="subtitle">Sign in to your ShopNova account</p>
+
+          <!-- Demo Hint -->
+          <div class="demo-hint">
+            <h4>🧪 Demo Credentials</h4>
+            <div class="demo-cred">
+              <span>👤 john@demo.com / demo1234</span>
+              <button class="demo-btn" onclick="fillDemo('user')" aria-label="Fill demo user credentials">Fill</button>
+            </div>
+            <div class="demo-cred" style="margin-top:6px">
+              <span>⚙️ admin@shopnova.com / admin1234</span>
+              <button class="demo-btn" onclick="fillDemo('admin')" aria-label="Fill admin credentials">Fill</button>
+            </div>
+          </div>
+
+          <!-- Social Login: Google Identity Services -->
+          <div class="social-login">
+            <!-- GSI renders the official Google button here -->
+            <div id="google-btn-login"
+                 style="display:flex;justify-content:center;min-height:44px"
+                 aria-label="Sign in with Google">
+            </div>
+            <!-- Fallback button shown only when GSI hasn't loaded yet -->
+            <button id="google-fallback-btn" class="social-login-btn"
+                    onclick="SocialLoginHandler.triggerGoogleLogin()"
+                    aria-label="Continue with Google"
+                    style="display:none">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              </svg>
+              Continue with Google
+            </button>
+          </div>
+
+          <div class="divider"><span>or sign in with email</span></div>
+
+          <form onsubmit="handleLogin(event)" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="login-email">Email Address</label>
+              <div class="input-icon-wrap">
+                <span class="input-icon">📧</span>
+                <input type="email" id="login-email" class="form-control" placeholder="your@email.com" autocomplete="email" required aria-required="true">
+              </div>
+            </div>
+            <div class="form-group">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <label class="form-label" for="login-password" style="margin-bottom:0">Password</label>
+                <a href="reset-password.html" style="font-size:12px;color:var(--brand-primary)">Forgot password?</a>
+              </div>
+              <div class="input-icon-wrap" style="position:relative">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="login-password" class="form-control" placeholder="••••••••" autocomplete="current-password" required aria-required="true">
+                <span class="password-toggle" onclick="togglePassword('login-password', this)">👁️</span>
+              </div>
+            </div>
+            <label class="form-check mb-6">
+              <input type="checkbox" id="remember-me"> Remember me for 30 days
+            </label>
+            <button type="submit" class="btn btn-primary btn-lg w-full" id="login-btn" aria-label="Sign in">
+              Sign In →
+            </button>
+          </form>
+
+          <p class="terms-text" style="margin-top:16px">
+            Don't have an account?
+            <a href="#" onclick="switchAuthTab('register')" style="color:var(--brand-primary)">Create one →</a>
+          </p>
+        </div>
+
+        <!-- Register Form -->
+        <div class="auth-form" id="form-register">
+          <h2>Create Account</h2>
+          <p class="subtitle">Join ShopNova and start shopping</p>
+
+          <div class="social-login">
+            <!-- GSI renders the official Google button here -->
+            <div id="google-btn-register"
+                 style="display:flex;justify-content:center;min-height:44px"
+                 aria-label="Sign up with Google">
+            </div>
+            <button id="google-fallback-reg-btn" class="social-login-btn"
+                    onclick="SocialLoginHandler.triggerGoogleLogin()"
+                    aria-label="Sign up with Google"
+                    style="display:none">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              </svg>
+              Sign up with Google
+            </button>
+          </div>
+
+          <div class="divider"><span>or create with email</span></div>
+
+          <form onsubmit="handleRegister(event)" novalidate>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="form-group">
+                <label class="form-label" for="reg-first">First Name</label>
+                <div class="input-icon-wrap">
+                  <span class="input-icon">👤</span>
+                  <input type="text" id="reg-first" class="form-control" placeholder="John" autocomplete="given-name" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="reg-last">Last Name</label>
+                <input type="text" id="reg-last" class="form-control" placeholder="Doe" autocomplete="family-name" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-email">Email Address</label>
+              <div class="input-icon-wrap">
+                <span class="input-icon">📧</span>
+                <input type="email" id="reg-email" class="form-control" placeholder="your@email.com" autocomplete="email" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-password">Password</label>
+              <div class="input-icon-wrap" style="position:relative">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="reg-password" class="form-control" placeholder="Min 8 characters" autocomplete="new-password" required oninput="checkPasswordStrength(this.value)">
+                <span class="password-toggle" onclick="togglePassword('reg-password', this)">👁️</span>
+              </div>
+              <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+              <div class="strength-text" id="strength-text">Password strength</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-confirm">Confirm Password</label>
+              <div class="input-icon-wrap">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="reg-confirm" class="form-control" placeholder="Repeat your password" autocomplete="new-password" required>
+              </div>
+            </div>
+            <label class="form-check mb-4">
+              <input type="checkbox" id="reg-terms" required> I agree to the
+              <a href="#" style="color:var(--brand-primary)">Terms of Service</a> and
+              <a href="#" style="color:var(--brand-primary)">Privacy Policy</a>
+            </label>
+            <label class="form-check mb-6">
+              <input type="checkbox" id="reg-newsletter"> Subscribe for exclusive deals and offers
+            </label>
+            <button type="submit" class="btn btn-primary btn-lg w-full" id="register-btn" aria-label="Create account">
+              Create Account →
+            </button>
+          </form>
+
+          <p class="terms-text">
+            Already have an account?
+            <a href="#" onclick="switchAuthTab('login')" style="color:var(--brand-primary)">Sign in →</a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/features.js"></script>
+  <script>
+    /* Render Google buttons via SocialLogin module in features.js */
+    if (typeof SocialLogin !== 'undefined') {
+      SocialLogin.renderGoogleButton('google-btn-login');
+      SocialLogin.renderGoogleButton('google-btn-register');
+    }
+
+    /* ════════════════════════════════════════════════════════
+       Page init
+    ════════════════════════════════════════════════════════ */
+    // Redirect if already logged in
+    if (Auth.isLoggedIn()) {
+      window.location.href = Auth.isAdmin() ? 'admin.html' : 'profile.html';
+    }
+
+    // Mobile logo
+    if (window.innerWidth <= 900) {
+      document.getElementById('mobile-logo').style.display = 'flex';
+    }
+
+    function switchAuthTab(tab) {
+      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+      document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+      document.getElementById('form-login').classList.toggle('active', tab === 'login');
+      document.getElementById('form-register').classList.toggle('active', tab === 'register');
+    }
+
+    function fillDemo(type) {
+      if (type === 'user') {
+        document.getElementById('login-email').value = 'john@demo.com';
+        document.getElementById('login-password').value = 'demo1234';
+      } else {
+        document.getElementById('login-email').value = 'admin@shopnova.com';
+        document.getElementById('login-password').value = 'admin1234';
+      }
+    }
+
+    let pending2FAEmail = null;
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email    = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn      = document.getElementById('login-btn');
+
+      if (!email || !password) { Notify.warning('Missing fields', 'Please fill in email and password'); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner spinner-sm"></span> Signing in...';
+
+      const result = await Auth.login(email, password);
+      if (result.success) {
+        Notify.success('Welcome back! 👋', `Hello, ${result.user.name}!`);
+        setTimeout(() => {
+          window.location.href = result.user.isAdmin ? 'admin.html' : 'profile.html';
+        }, 1000);
+      } else if (result.require2FA) {
+        pending2FAEmail = result.email;
+        btn.disabled = false;
+        btn.innerHTML = 'Sign In →';
+        show2FAModal(result.email, result.message);
+      } else {
+        Notify.error('Login failed', result.error);
+        btn.disabled = false;
+        btn.innerHTML = 'Sign In →';
+      }
+    }
+
+    function show2FAModal(email, msg) {
+      document.getElementById('form-login').style.display = 'none';
+      let modal = document.getElementById('2fa-container');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = '2fa-container';
+        modal.className = 'auth-form active';
+        document.getElementById('form-login').parentNode.appendChild(modal);
+      }
+      modal.style.display = 'block';
+      modal.innerHTML = `
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-size:40px;margin-bottom:10px">🔐</div>
+          <h2 style="font-size:22px;font-weight:800;color:var(--text-primary)">Two-Factor Authentication</h2>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:6px">${msg || 'Enter the 6-digit verification code sent to your email.'}</p>
+          <div style="font-size:13px;font-weight:700;color:var(--brand-primary);margin-top:4px">${email}</div>
+        </div>
+        <form onsubmit="verify2FAOTP(event)">
+          <div class="form-group" style="margin-bottom:16px">
+            <label class="form-label" style="text-align:center">6-Digit Verification Code</label>
+            <input type="text" id="otp-input" class="form-control" placeholder="123456" maxlength="6" style="text-align:center;font-size:24px;letter-spacing:8px;font-weight:800;" autocomplete="one-time-code" required autofocus>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-full" id="otp-btn">Verify Code & Sign In →</button>
+          <button type="button" class="btn btn-secondary w-full" style="margin-top:10px" onclick="backToLogin()">← Back to Login</button>
+        </form>
+      `;
+      setTimeout(() => document.getElementById('otp-input')?.focus(), 100);
+    }
+
+    function backToLogin() {
+      const container = document.getElementById('2fa-container');
+      if (container) container.style.display = 'none';
+      document.getElementById('form-login').style.display = 'block';
+    }
+
+    async function verify2FAOTP(e) {
+      e.preventDefault();
+      const code = document.getElementById('otp-input').value.trim();
+      const btn  = document.getElementById('otp-btn');
+      if (!code || code.length !== 6) {
+        Notify.warning('Invalid Code', 'Please enter a 6-digit verification code');
+        return;
+      }
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner spinner-sm"></span> Verifying...';
+
+      const res = await Auth.verifyOTP(pending2FAEmail, code);
+      if (res.success) {
+        Notify.success('2FA Verified! 🔓', `Welcome back, ${res.user.name}!`);
+        setTimeout(() => {
+          window.location.href = res.user.isAdmin ? 'admin.html' : 'profile.html';
+        }, 800);
+      } else {
+        Notify.error('Verification Failed', res.error || 'Invalid or expired OTP code');
+        btn.disabled = false;
+        btn.innerHTML = 'Verify Code & Sign In →';
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const first    = document.getElementById('reg-first').value.trim();
+      const last     = document.getElementById('reg-last').value.trim();
+      const email    = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const confirm  = document.getElementById('reg-confirm').value;
+      const terms    = document.getElementById('reg-terms').checked;
+      const btn      = document.getElementById('register-btn');
+
+      if (!first || !last || !email || !password) { Notify.warning('Missing fields', 'Please fill in all fields'); return; }
+      if (password.length < 8) { Notify.warning('Weak password', 'Password must be at least 8 characters'); return; }
+      if (password !== confirm) { Notify.error('Password mismatch', 'Passwords do not match'); return; }
+      if (!terms) { Notify.warning('Terms required', 'Please accept the Terms of Service'); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner spinner-sm"></span> Creating account...';
+
+      const result = await Auth.register(`${first} ${last}`, email, password);
+      if (result.success) {
+        Notify.success('Account created! 🎉', 'Welcome to ShopNova!');
+        setTimeout(() => window.location.href = 'profile.html', 1000);
+      } else {
+        Notify.error('Registration failed', result.error);
+        btn.disabled = false;
+        btn.innerHTML = 'Create Account →';
+      }
+    }
+
+    function checkPasswordStrength(pwd) {
+      const fill = document.getElementById('strength-fill');
+      const text = document.getElementById('strength-text');
+      let strength = 0;
+      if (pwd.length >= 8) strength++;
+      if (/[A-Z]/.test(pwd)) strength++;
+      if (/[0-9]/.test(pwd)) strength++;
+      if (/[^A-Za-z0-9]/.test(pwd)) strength++;
+
+      const pcts   = [0, 25, 50, 75, 100];
+      const colors = ['transparent', '#EF4444', '#F59E0B', '#60A5FA', '#43E97B'];
+      const labels = ['', 'Very Weak', 'Weak', 'Good', 'Strong'];
+
+      fill.style.width      = pcts[strength] + '%';
+      fill.style.background = colors[strength];
+      text.textContent      = labels[strength] || 'Password strength';
+      text.style.color      = colors[strength];
+    }
+
+    function togglePassword(inputId, btn) {
+      const input  = document.getElementById(inputId);
+      const isHidden = input.type === 'password';
+      input.type   = isHidden ? 'text' : 'password';
+      btn.textContent = isHidden ? '🙈' : '👁️';
+    }
+
+    // Init without navbar (standalone page)
+    Cart.updateNavBadge();
+    Wishlist.updateNavBadge();
+  </script>
+</body>
+</html>

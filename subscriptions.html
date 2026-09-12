@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage your ShopNova subscriptions. Auto-reorder your favourite products weekly, bi-weekly, or monthly and save 5%.">
+  <title>My Subscriptions — ShopNova</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6C63FF">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .subs-page { padding: var(--space-8) 0 var(--space-16); }
+
+    .subs-hero {
+      background: linear-gradient(135deg, rgba(67,233,123,0.08), rgba(56,249,215,0.04));
+      border: 1px solid rgba(67,233,123,0.15);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-10) var(--space-8);
+      margin-bottom: var(--space-8);
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+      position: relative;
+      overflow: hidden;
+    }
+    .subs-hero::before {
+      content: '';
+      position: absolute;
+      right: -60px; top: -60px;
+      width: 240px; height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(67,233,123,0.12) 0%, transparent 70%);
+    }
+    .subs-hero-icon { font-size: 64px; flex-shrink: 0; }
+    .subs-hero-text h1 { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; margin-bottom: var(--space-2); }
+    .subs-hero-text p { color: var(--text-secondary); line-height: 1.7; }
+    .subs-hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; margin-top: 12px;
+      background: rgba(67,233,123,0.15); border: 1px solid rgba(67,233,123,0.3);
+      border-radius: var(--radius-full); font-size: 13px; font-weight: 700;
+      color: var(--brand-accent);
+    }
+
+    .subs-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+    .subs-stat-card {
+      background: var(--bg-700); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl); padding: var(--space-6);
+      text-align: center; transition: all var(--transition-base);
+    }
+    .subs-stat-card:hover { border-color: var(--brand-primary); transform: translateY(-4px); }
+    .subs-stat-icon { font-size: 32px; margin-bottom: 8px; }
+    .subs-stat-val { font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; color: var(--brand-accent); }
+    .subs-stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    .subs-grid { display: grid; gap: var(--space-5); }
+
+    .sub-card {
+      background: var(--bg-700); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl); padding: var(--space-6);
+      display: grid; grid-template-columns: 80px 1fr auto;
+      gap: var(--space-5); align-items: center;
+      transition: all var(--transition-base);
+      position: relative; overflow: hidden;
+    }
+    .sub-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px; background: var(--brand-accent); border-radius: 2px 0 0 2px;
+    }
+    .sub-card.paused::before { background: var(--brand-orange); }
+    .sub-card.cancelled::before { background: var(--text-muted); opacity: 0.4; }
+    .sub-card:hover { border-color: rgba(67,233,123,0.3); box-shadow: var(--shadow-md); }
+
+    .sub-img { width: 80px; height: 80px; border-radius: var(--radius-md); object-fit: cover; background: var(--bg-500); }
+
+    .sub-info-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+    .sub-info-freq { font-size: 13px; color: var(--brand-accent); font-weight: 600; margin-bottom: 4px; }
+    .sub-info-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+    .sub-info-meta span { display: flex; align-items: center; gap: 4px; }
+
+    .sub-price-section { text-align: right; }
+    .sub-price-current { font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; color: var(--brand-accent); }
+    .sub-price-original { font-size: 12px; color: var(--text-muted); text-decoration: line-through; }
+    .sub-price-save { font-size: 11px; color: var(--brand-accent); font-weight: 700; background: rgba(67,233,123,0.1); padding: 2px 8px; border-radius: 8px; margin-top: 4px; display: inline-block; }
+
+    .sub-actions { display: flex; gap: 8px; margin-top: 12px; justify-content: flex-end; flex-wrap: wrap; }
+
+    .sub-status-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: var(--radius-full);
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+    }
+    .sub-status-active   { background: rgba(67,233,123,0.12); color: var(--brand-accent); border: 1px solid rgba(67,233,123,0.25); }
+    .sub-status-paused   { background: rgba(255,107,53,0.12); color: var(--brand-orange); border: 1px solid rgba(255,107,53,0.25); }
+    .sub-status-cancelled{ background: rgba(107,114,153,0.12); color: var(--text-muted);   border: 1px solid rgba(107,114,153,0.2); }
+
+    .empty-subs {
+      text-align: center; padding: var(--space-16) var(--space-8);
+      background: var(--bg-700); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+    }
+
+    .freq-selector { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+    .freq-chip {
+      padding: 4px 12px; border: 1px solid var(--glass-border);
+      border-radius: var(--radius-full); font-size: 12px; cursor: pointer;
+      color: var(--text-secondary); background: none; transition: all 0.2s;
+    }
+    .freq-chip.active, .freq-chip:hover {
+      background: rgba(67,233,123,0.15); border-color: var(--brand-accent); color: var(--brand-accent);
+    }
+
+    @media (max-width: 768px) {
+      .sub-card { grid-template-columns: 64px 1fr; }
+      .sub-price-section { grid-column: 1 / -1; text-align: left; }
+      .subs-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="subs-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb mb-6" aria-label="Breadcrumb">
+        <span class="breadcrumb-item"><a href="index.html">Home</a></span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-item"><a href="profile.html">My Account</a></span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-item active">Subscriptions</span>
+      </nav>
+
+      <!-- Hero -->
+      <div class="subs-hero reveal">
+        <div class="subs-hero-icon">📅</div>
+        <div class="subs-hero-text">
+          <h1>Subscribe &amp; Save</h1>
+          <p>Never run out of your favourite products. Set up auto-reorders and enjoy <strong style="color:var(--brand-accent)">5% off</strong> every delivery — automatically.</p>
+          <div class="subs-hero-badge">✅ Save 5% on every auto-order • Cancel anytime • Pause at will</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="subs-stats" id="subs-stats">
+        <div class="subs-stat-card reveal">
+          <div class="subs-stat-icon">📦</div>
+          <div class="subs-stat-val" id="stat-active">—</div>
+          <div class="subs-stat-label">Active Subscriptions</div>
+        </div>
+        <div class="subs-stat-card reveal delay-200">
+          <div class="subs-stat-icon">💰</div>
+          <div class="subs-stat-val" id="stat-saved">—</div>
+          <div class="subs-stat-label">Total Saved</div>
+        </div>
+        <div class="subs-stat-card reveal delay-400">
+          <div class="subs-stat-icon">🔄</div>
+          <div class="subs-stat-val" id="stat-orders">—</div>
+          <div class="subs-stat-label">Auto-Orders Placed</div>
+        </div>
+      </div>
+
+      <!-- Subscription List -->
+      <div class="section-header mb-6">
+        <div>
+          <div class="section-badge green">📅 Auto-Reorder</div>
+          <h2 class="section-title">My Subscriptions</h2>
+        </div>
+        <a href="products.html?cat=grocery" class="btn btn-primary">+ Add Subscription</a>
+      </div>
+
+      <div id="subs-container">
+        <div class="empty-state">
+          <div class="spinner"></div>
+          <p>Loading subscriptions...</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/chat-widget.js"></script>
+  <script>
+    document.getElementById('navbar-container').innerHTML = buildNavbar();
+    document.getElementById('footer-container').innerHTML = buildFooter();
+
+    const FREQ_LABELS = {
+      weekly: 'Every Week', biweekly: 'Every 2 Weeks',
+      monthly: 'Every Month', bimonthly: 'Every 2 Months'
+    };
+
+    async function loadSubscriptions() {
+      const container = document.getElementById('subs-container');
+
+      if (!Auth.isLoggedIn()) {
+        container.innerHTML = `
+          <div class="empty-subs">
+            <div class="empty-icon">🔐</div>
+            <h3>Login Required</h3>
+            <p class="text-muted mb-6">Please log in to manage your subscriptions.</p>
+            <a href="login.html" class="btn btn-primary">Login to Continue</a>
+          </div>`;
+        return;
+      }
+
+      try {
+        const res = await apiRequest('GET', '/subscriptions');
+        if (!res.success) throw new Error(res.error);
+
+        const subs = res.data || [];
+
+        // Update stats
+        const active = subs.filter(s => s.status === 'active').length;
+        const totalOrders = subs.reduce((s, sub) => s + (sub.ordersPlaced || 0), 0);
+        const totalSaved = subs.reduce((s, sub) => {
+          const disc = sub.extraDiscount || 5;
+          return s + ((sub.price || 0) * (disc / 100) * (sub.ordersPlaced || 0));
+        }, 0);
+
+        document.getElementById('stat-active').textContent  = active;
+        document.getElementById('stat-saved').textContent   = '$' + totalSaved.toFixed(2);
+        document.getElementById('stat-orders').textContent  = totalOrders;
+
+        if (subs.length === 0) {
+          container.innerHTML = `
+            <div class="empty-subs">
+              <div class="empty-icon">📭</div>
+              <h3>No Subscriptions Yet</h3>
+              <p class="text-muted mb-6">Subscribe to your favourite products and save 5% on every auto-order.</p>
+              <a href="products.html?cat=grocery" class="btn btn-primary">Browse Eligible Products</a>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = `<div class="subs-grid">${subs.map(sub => buildSubCard(sub)).join('')}</div>`;
+        initScrollReveal();
+
+      } catch (e) {
+        container.innerHTML = `
+          <div class="empty-subs">
+            <div class="empty-icon">⚠️</div>
+            <h3>Couldn't load subscriptions</h3>
+            <p class="text-muted">${e.message}</p>
+            <button class="btn btn-secondary mt-4" onclick="loadSubscriptions()">Retry</button>
+          </div>`;
+      }
+    }
+
+    function buildSubCard(sub) {
+      const img   = sub.product?.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop';
+      const name  = sub.productName || sub.product?.name || 'Product';
+      const price = sub.discountedPrice || sub.price;
+      const freq  = FREQ_LABELS[sub.frequency] || sub.frequency;
+      const next  = sub.nextOrderDate ? new Date(sub.nextOrderDate).toLocaleDateString() : 'N/A';
+
+      const statusClass = sub.status === 'active' ? 'sub-status-active'
+                        : sub.status === 'paused'  ? 'sub-status-paused'
+                        : 'sub-status-cancelled';
+      const statusIcon  = sub.status === 'active' ? '✅' : sub.status === 'paused' ? '⏸️' : '❌';
+
+      return `
+        <div class="sub-card ${sub.status} reveal" id="sub-${sub.id}">
+          <img class="sub-img" src="${img}" alt="${name}" onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop'">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <div class="sub-info-name">${name}</div>
+              <span class="sub-status-badge ${statusClass}">${statusIcon} ${sub.status}</span>
+            </div>
+            <div class="sub-info-freq">🔄 ${freq}</div>
+            <div class="sub-info-meta">
+              <span>📦 Qty: ${sub.qty}</span>
+              <span>📅 Next: ${next}</span>
+              <span>🛒 Orders: ${sub.ordersPlaced || 0}</span>
+            </div>
+            <div class="sub-actions">
+              ${sub.status !== 'cancelled' ? `
+                <button class="btn btn-sm btn-secondary" onclick="pauseSub('${sub.id}','${sub.status}')">
+                  ${sub.status === 'paused' ? '▶️ Resume' : '⏸️ Pause'}
+                </button>
+                <select class="form-control" style="font-size:12px;padding:4px 8px;border-radius:8px;height:32px"
+                        onchange="changeFreq('${sub.id}', this.value)">
+                  <option value="weekly"    ${sub.frequency==='weekly'    ? 'selected':''}>Every Week</option>
+                  <option value="biweekly"  ${sub.frequency==='biweekly'  ? 'selected':''}>Every 2 Weeks</option>
+                  <option value="monthly"   ${sub.frequency==='monthly'   ? 'selected':''}>Every Month</option>
+                  <option value="bimonthly" ${sub.frequency==='bimonthly' ? 'selected':''}>Every 2 Months</option>
+                </select>
+                <button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:#EF4444;border:1px solid rgba(239,68,68,0.25)" onclick="cancelSub('${sub.id}')">
+                  ❌ Cancel
+                </button>
+              ` : '<span class="text-muted" style="font-size:13px">Subscription cancelled</span>'}
+            </div>
+          </div>
+          <div class="sub-price-section">
+            <div class="sub-price-current">${formatPrice(price)}</div>
+            <div class="sub-price-original">${formatPrice(sub.price)}</div>
+            <div class="sub-price-save">Save ${sub.extraDiscount || 5}%</div>
+          </div>
+        </div>`;
+    }
+
+    async function pauseSub(id, currentStatus) {
+      const res = await apiRequest('POST', `/subscriptions/${id}/pause`);
+      if (res.success) {
+        Notify.success(res.data.status === 'paused' ? '⏸️ Paused' : '▶️ Resumed', `Subscription ${res.data.status}`);
+        loadSubscriptions();
+      } else {
+        Notify.error('Error', res.error);
+      }
+    }
+
+    async function changeFreq(id, frequency) {
+      const res = await apiRequest('PUT', `/subscriptions/${id}`, { frequency });
+      if (res.success) Notify.success('✅ Updated', `Delivery frequency changed to ${FREQ_LABELS[frequency]}`);
+      else Notify.error('Error', res.error);
+    }
+
+    async function cancelSub(id) {
+      if (!confirm('Are you sure you want to cancel this subscription?')) return;
+      const res = await apiRequest('DELETE', `/subscriptions/${id}`);
+      if (res.success) {
+        Notify.success('❌ Cancelled', 'Subscription cancelled successfully');
+        loadSubscriptions();
+      } else {
+        Notify.error('Error', res.error);
+      }
+    }
+
+    loadSubscriptions();
+    initApp();
+    // Register SW
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/service-worker.js').catch(() => {});
+  </script>
+</body>
+</html>

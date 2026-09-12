@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Page not found — ShopNova">
+  <title>404 — Page Not Found | ShopNova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0A0B0E;
+      color: #E2E8F0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.15;
+      pointer-events: none;
+      animation: pulse 8s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 500px; height: 500px; background: #6C63FF; top: -200px; right: -100px; }
+    .orb-2 { width: 400px; height: 400px; background: #EC4899; bottom: -150px; left: -100px; animation-delay: -4s; }
+    @keyframes pulse { from { opacity: 0.12; } to { opacity: 0.22; } }
+
+    /* Grid lines background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    /* Content */
+    .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 24px;
+      max-width: 560px;
+    }
+
+    .error-code {
+      font-size: clamp(100px, 20vw, 180px);
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, #6C63FF 0%, #EC4899 50%, #43E97B 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: glow-text 3s ease-in-out infinite alternate;
+      filter: drop-shadow(0 0 40px rgba(108,99,255,0.3));
+    }
+    @keyframes glow-text {
+      from { filter: drop-shadow(0 0 20px rgba(108,99,255,0.3)); }
+      to   { filter: drop-shadow(0 0 50px rgba(236,72,153,0.5)); }
+    }
+
+    .emoji {
+      font-size: 56px;
+      display: block;
+      margin: 8px 0 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-12px); }
+    }
+
+    h1 {
+      font-size: clamp(20px, 4vw, 28px);
+      font-weight: 800;
+      color: #F0F2FF;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: #64748B;
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 28px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6C63FF, #4776E6);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(108,99,255,0.4);
+    }
+    .btn-primary:hover { box-shadow: 0 8px 28px rgba(108,99,255,0.55); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #94A3B8;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.1); color: #E2E8F0; }
+
+    /* Search box */
+    .search-wrap {
+      display: flex;
+      gap: 8px;
+      max-width: 380px;
+      margin: 0 auto 28px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      color: #E2E8F0;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .search-input::placeholder { color: #475569; }
+    .search-input:focus { border-color: #6C63FF; background: rgba(108,99,255,0.08); }
+    .search-btn {
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #6C63FF, #4776E6);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .search-btn:hover { transform: scale(1.06); }
+
+    /* Quick links */
+    .quick-links {
+      margin-top: 32px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .quick-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: rgba(108,99,255,0.08);
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: 20px;
+      color: #A78BFA;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .quick-link:hover { background: rgba(108,99,255,0.18); transform: translateY(-1px); }
+
+    /* Back counter */
+    .auto-redirect {
+      margin-top: 24px;
+      font-size: 13px;
+      color: #3D4466;
+    }
+    .auto-redirect span { color: #6C63FF; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <div class="container">
+
+    <div class="error-code">404</div>
+    <span class="emoji">🔍</span>
+
+    <h1>Page Not Found</h1>
+    <p class="subtitle">
+      Oops! The page you're looking for seems to have gone shopping elsewhere.<br>
+      Let's get you back on track.
+    </p>
+
+    <!-- Search -->
+    <form class="search-wrap" id="search-form" action="search-results.html" method="get">
+      <input
+        class="search-input"
+        type="text"
+        name="q"
+        id="search-input-404"
+        placeholder="Search for products…"
+        autocomplete="off"
+      >
+      <button type="submit" class="search-btn" aria-label="Search">🔎</button>
+    </form>
+
+    <!-- Buttons -->
+    <div class="btn-row">
+      <a href="index.html" class="btn btn-primary">🏠 Go Home</a>
+      <button class="btn btn-ghost" onclick="history.back()">← Go Back</button>
+    </div>
+
+    <!-- Quick links -->
+    <div class="quick-links">
+      <a href="products.html" class="quick-link">🛍️ Shop All</a>
+      <a href="cart.html" class="quick-link">🛒 My Cart</a>
+      <a href="order-tracking.html" class="quick-link">📦 Track Order</a>
+      <a href="login.html" class="quick-link">👤 Login</a>
+    </div>
+
+    <!-- Auto redirect countdown -->
+    <p class="auto-redirect" id="auto-msg"></p>
+  </div>
+
+  <script>
+    // Auto-redirect to home after 15s
+    let secs = 15;
+    const msg = document.getElementById('auto-msg');
+    const interval = setInterval(() => {
+      secs--;
+      msg.innerHTML = `Redirecting to home in <span>${secs}</span>s…`;
+      if (secs <= 0) { clearInterval(interval); window.location.href = 'index.html'; }
+    }, 1000);
+    msg.innerHTML = `Redirecting to home in <span>${secs}</span>s…`;
+
+    // Cancel redirect on user interaction
+    document.addEventListener('click', () => { clearInterval(interval); msg.textContent = ''; }, { once: true });
+    document.getElementById('search-input-404').addEventListener('focus', () => {
+      clearInterval(interval); msg.textContent = '';
+    });
+  </script>
+
+</body>
+</html>

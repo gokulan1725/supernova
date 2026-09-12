@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ShopNova Product Bundles — Buy complementary products together and save up to 15%.">
+  <title>Bundle & Save — ShopNova</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .bundles-page { padding: var(--space-8) 0 var(--space-16); }
+
+    .bundles-hero {
+      background: linear-gradient(135deg, rgba(108,99,255,0.12), rgba(236,72,153,0.08));
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-10) var(--space-8);
+      margin-bottom: var(--space-10);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bundle-card {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-8);
+      margin-bottom: var(--space-8);
+      transition: all var(--transition-base);
+      box-shadow: var(--shadow-md);
+    }
+
+    .bundle-card:hover {
+      border-color: var(--brand-primary);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .bundle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-6);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .bundle-title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 800;
+    }
+
+    .bundle-badge {
+      background: var(--grad-primary);
+      color: white;
+      font-weight: 800;
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+    }
+
+    .bundle-items-grid {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: var(--space-6);
+      flex-wrap: wrap;
+    }
+
+    .bundle-item-card {
+      flex: 1;
+      min-width: 220px;
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .bundle-item-card:hover { transform: translateY(-3px); }
+
+    .bundle-plus {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--brand-primary);
+    }
+
+    .bundle-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--glass-border);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .bundle-price-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+
+    .bundle-final-price {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--text-primary);
+    }
+
+    .bundle-orig-price {
+      font-size: 1.1rem;
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .bundle-save-tag {
+      color: var(--brand-accent);
+      font-weight: 700;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="bundles-page">
+    <div class="container">
+
+      <!-- Breadcrumbs -->
+      <nav class="breadcrumb mb-6" aria-label="Breadcrumb">
+        <span class="breadcrumb-item"><a href="index.html">Home</a></span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-item active">Bundles &amp; Savings</span>
+      </nav>
+
+      <!-- Hero Banner -->
+      <div class="bundles-hero animate-fadeIn">
+        <span style="font-size:48px; display:block; margin-bottom:12px">🎁</span>
+        <h1 style="font-family:var(--font-display); font-size:2.5rem; font-weight:900; margin-bottom:8px">
+          Bundle &amp; <span class="grad-text">Save Big</span>
+        </h1>
+        <p style="color:var(--text-secondary); max-width:600px; margin:0 auto">
+          Buy complementary products together and instantly save up to 15% off the total price. Free delivery included!
+        </p>
+      </div>
+
+      <!-- Bundles List Container -->
+      <div id="bundles-container"></div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/features.js"></script>
+  <script>
+    document.getElementById('navbar-container').innerHTML = buildNavbar();
+    document.getElementById('footer-container').innerHTML = buildFooter();
+
+    function renderBundles() {
+      const container = document.getElementById('bundles-container');
+      if (typeof Bundles === 'undefined') return;
+
+      const allBundles = Bundles.getAll();
+      container.innerHTML = allBundles.map(b => {
+        const products = Bundles.getBundleProducts(b);
+        const pricing = Bundles.getBundlePrice(b);
+
+        return `
+          <div class="bundle-card animate-fadeInUp">
+            <div class="bundle-header">
+              <div>
+                <div class="bundle-title">${b.name}</div>
+                <p style="color:var(--text-secondary); font-size:13px; margin-top:4px">${b.description}</p>
+              </div>
+              <span class="bundle-badge">SAVE ${b.discount}%</span>
+            </div>
+
+            <div class="bundle-items-grid">
+              ${products.map((p, idx) => `
+                ${idx > 0 ? '<span class="bundle-plus">+</span>' : ''}
+                <div class="bundle-item-card" onclick="window.location.href='product-detail.html?id=${p.id}'">
+                  <img src="${p.image}" style="width:60px; height:60px; border-radius:12px; object-fit:cover">
+                  <div>
+                    <div style="font-size:13px; font-weight:700; color:var(--text-primary)">${p.name}</div>
+                    <div style="font-size:12px; color:var(--brand-secondary); margin-top:2px">${formatPrice(p.price)}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="bundle-footer">
+              <div class="bundle-price-wrap">
+                <span class="bundle-final-price">${formatPrice(pricing.discounted)}</span>
+                <span class="bundle-orig-price">${formatPrice(pricing.total)}</span>
+                <span class="bundle-save-tag">💰 Save ${formatPrice(pricing.saved)}</span>
+              </div>
+              <button class="btn btn-primary btn-lg" onclick="Bundles.addBundleToCart(Bundles.getAll().find(item => item.id === '${b.id}'))">
+                🛒 Add Bundle to Cart
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    renderBundles();
+    initApp();
+  </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{
+  "name": "ShopNova — Shop Smart, Shop Premium",
+  "short_name": "ShopNova",
+  "description": "Your premium e-commerce destination. Shop millions of products from top brands.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0A0B0E",
+  "theme_color": "#6C63FF",
+  "orientation": "portrait-primary",
+  "categories": ["shopping", "lifestyle"],
+  "lang": "en",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/6C63FF/ffffff?text=SN",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/6C63FF/ffffff?text=SN",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1280&h=720&fit=crop",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "ShopNova Homepage"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Flash Deals",
+      "short_name": "Deals",
+      "url": "/products.html?sale=true",
+      "icons": [{ "src": "https://via.placeholder.com/96x96/FF6B35/ffffff?text=⚡", "sizes": "96x96" }]
+    },
+    {
+      "name": "My Orders",
+      "short_name": "Orders",
+      "url": "/profile.html",
+      "icons": [{ "src": "https://via.placeholder.com/96x96/43E97B/ffffff?text=📦", "sizes": "96x96" }]
+    },
+    {
+      "name": "Wishlist",
+      "short_name": "Wishlist",
+      "url": "/wishlist.html",
+      "icons": [{ "src": "https://via.placeholder.com/96x96/EC4899/ffffff?text=❤️", "sizes": "96x96" }]
+    }
+  ]
+}

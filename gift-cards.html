@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Purchase ShopNova gift cards for friends and family. Custom amounts, personal messages, and instant delivery.">
+  <title>Gift Cards — ShopNova</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .gift-page { padding: var(--space-8) 0 var(--space-16); }
+
+    .gift-hero {
+      background: linear-gradient(135deg, rgba(108,99,255,0.1), rgba(236,72,153,0.05));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-12) var(--space-8);
+      text-align: center;
+      margin-bottom: var(--space-12);
+    }
+
+    .gift-hero-title {
+      font-family: var(--font-display);
+      font-size: var(--text-4xl);
+      font-weight: 900;
+      margin-bottom: var(--space-4);
+    }
+
+    .gift-hero-sub {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto var(--space-8);
+    }
+
+    .gift-card-preview {
+      background: linear-gradient(135deg, #6C63FF, #8B5CF6, #EC4899);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-10) var(--space-8);
+      color: white;
+      text-align: center;
+      max-width: 500px;
+      margin: 0 auto var(--space-8);
+      box-shadow: 0 20px 60px rgba(108,99,255,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gift-card-preview::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.3;
+    }
+
+    .gift-card-preview-content { position: relative; z-index: 1; }
+
+    .gift-card-amount {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      font-weight: 900;
+      margin-bottom: var(--space-2);
+    }
+
+    .gift-card-label {
+      font-size: var(--text-sm);
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .gift-form-section {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .gift-amount-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    .gift-amount-btn {
+      padding: var(--space-4);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      background: transparent;
+      color: var(--text-primary);
+      font-size: var(--text-lg);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .gift-amount-btn:hover { border-color: var(--brand-primary); }
+    .gift-amount-btn.active { border-color: var(--brand-primary); background: rgba(108,99,255,0.1); }
+
+    .gift-cards-list {
+      margin-top: var(--space-12);
+    }
+
+    .gift-card-item {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .gift-card-item-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(236,72,153,0.1));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .gift-amount-options { grid-template-columns: repeat(2, 1fr); }
+      .gift-hero-title { font-size: var(--text-2xl); }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="gift-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb mb-6" aria-label="Breadcrumb">
+        <span class="breadcrumb-item"><a href="index.html">Home</a></span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-item active">Gift Cards</span>
+      </nav>
+
+      <!-- Hero -->
+      <div class="gift-hero">
+        <h1 class="gift-hero-title">Give the Gift of <span class="grad-text">Shopping</span></h1>
+        <p class="gift-hero-sub">Send a ShopNova gift card to friends and family. Valid for any product, any time.</p>
+
+        <div class="gift-card-preview">
+          <div class="gift-card-preview-content">
+            <div class="gift-card-label">ShopNova Gift Card</div>
+            <div class="gift-card-amount" id="preview-amount">₹1000</div>
+            <div style="font-size:14px;opacity:0.8">Personalized for someone special</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Purchase Form -->
+      <div class="gift-form-section">
+        <h3 style="font-weight:700;margin-bottom:var(--space-5)">Choose Amount</h3>
+          <button class="gift-amount-btn" onclick="selectGiftAmount(500, this)">₹500</button>
+          <button class="gift-amount-btn active" onclick="selectGiftAmount(1000, this)">₹1000</button>
+          <button class="gift-amount-btn" onclick="selectGiftAmount(2000, this)">₹2000</button>
+          <button class="gift-amount-btn" onclick="selectGiftAmount(5000, this)">₹5000</button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="gift-amount-custom">Or enter custom amount</label>
+          <input type="number" class="form-control" id="gift-amount-custom" placeholder="Enter amount" min="100" max="50000" oninput="updatePreview()">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="gift-recipient">Recipient Email</label>
+          <input type="email" class="form-control" id="gift-recipient" placeholder="friend@example.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="gift-message">Personal Message</label>
+          <textarea class="form-control" id="gift-message" rows="3" placeholder="Write a heartfelt message..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="gift-sender">Your Name</label>
+          <input type="text" class="form-control" id="gift-sender" placeholder="Your name">
+        </div>
+
+        <button class="btn btn-primary btn-lg w-full" onclick="purchaseGiftCard()" style="margin-top:var(--space-4)">
+          🎁 Purchase Gift Card
+        </button>
+      </div>
+
+      <!-- My Gift Cards -->
+      <div class="gift-cards-list" id="my-gift-cards" style="display:none">
+        <h3 class="font-bold mb-4">My Gift Cards</h3>
+        <div id="gift-cards-container"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/features.js"></script>
+  <script>
+    document.getElementById('navbar-container').innerHTML = buildNavbar();
+    document.getElementById('footer-container').innerHTML = buildFooter();
+
+    let selectedAmount = 50;
+
+    function selectGiftAmount(amount, btn) {
+      selectedAmount = amount;
+      document.querySelectorAll('.gift-amount-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('gift-amount-custom').value = '';
+      updatePreview();
+    }
+
+    function updatePreview() {
+      const custom = parseFloat(document.getElementById('gift-amount-custom').value);
+      const amount = custom > 0 ? custom : selectedAmount;
+      document.getElementById('preview-amount').textContent = '₹' + amount;
+    }
+
+    function purchaseGiftCard() {
+      const custom = parseFloat(document.getElementById('gift-amount-custom').value);
+      const amount = custom > 0 ? custom : selectedAmount;
+      const recipient = document.getElementById('gift-recipient').value.trim();
+      const message = document.getElementById('gift-message').value.trim();
+      const sender = document.getElementById('gift-sender').value.trim();
+
+      if (amount < 100) { Notify.warning('Invalid amount', 'Minimum gift card amount is ₹100.'); return; }
+      if (amount > 50000) { Notify.warning('Invalid amount', 'Maximum gift card amount is ₹50,000.'); return; }
+
+      const card = GiftCards.purchase(amount, recipient, message, sender);
+      Notify.success('Gift Card Purchased! 🎉', `Code: ${card.code}`);
+      renderMyGiftCards();
+      document.getElementById('gift-recipient').value = '';
+      document.getElementById('gift-message').value = '';
+      document.getElementById('gift-sender').value = '';
+    }
+
+    function renderMyGiftCards() {
+      const cards = GiftCards.getAll();
+      const section = document.getElementById('my-gift-cards');
+      const container = document.getElementById('gift-cards-container');
+
+      if (!cards.length) { section.style.display = 'none'; return; }
+      section.style.display = 'block';
+
+      container.innerHTML = cards.map(c => `
+        <div class="gift-card-item">
+          <div class="gift-card-item-icon">🎁</div>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:14px">${c.recipientEmail || 'Personal Use'}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px">${c.message || 'No message'}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Purchased: ${c.purchasedAt} • ${c.redeemed ? 'Redeemed ' + c.redeemedAt : 'Active'}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:900;font-size:18px;color:var(--brand-secondary)">${formatPrice(c.balance)}</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${c.redeemed ? 'Redeemed' : 'Balance'}</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="copyGiftCode('${c.code}')">📋 Copy Code</button>
+        </div>
+      `).join('');
+    }
+
+    function copyGiftCode(code) {
+      navigator.clipboard.writeText(code).then(() => {
+        Notify.success('Code copied!', code);
+      }).catch(() => {
+        Notify.warning('Copy failed', 'Please copy manually.');
+      });
+    }
+
+    renderMyGiftCards();
+    initApp();
+  </script>
+</body>
+</html>

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ShopNova administrator panel. Monitor orders, inventory levels, sales metrics, and system analytics.">
+  <title>Admin Dashboard — ShopNova</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .admin-page {
+      padding: var(--space-8) 0 var(--space-16);
+      min-height: calc(100vh - 450px);
+    }
+
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: var(--space-6);
+      align-items: start;
+    }
+
+    /* Admin Sidebar Navigation */
+    .admin-nav {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .admin-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .admin-nav-item:hover,
+    .admin-nav-item.active {
+      background: rgba(108, 99, 255, 0.1);
+      color: var(--brand-primary);
+      box-shadow: inset 3px 0 0 var(--brand-primary);
+    }
+
+    /* Content Area styling */
+    .admin-content-panel {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      margin-bottom: var(--space-6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+
+    .stat-card {
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+    }
+
+    .stat-blue::before { background: var(--brand-primary); }
+    .stat-green::before { background: var(--brand-accent); }
+    .stat-orange::before { background: var(--brand-orange); }
+    .stat-gold::before { background: var(--brand-gold); }
+
+    .stat-card-title {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-1);
+    }
+
+    .stat-card-value {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+
+    .stat-card-trend {
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .trend-up { color: var(--brand-accent); }
+    .trend-down { color: var(--brand-secondary); }
+
+    /* Admin Table Styling */
+    .admin-table-container {
+      overflow-x: auto;
+      margin-top: var(--space-4);
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: var(--text-sm);
+    }
+
+    .admin-table th {
+      background: var(--bg-600);
+      color: var(--text-secondary);
+      font-weight: 600;
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .admin-table td {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--glass-border);
+      vertical-align: middle;
+    }
+
+    .admin-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Actions and buttons */
+    .quick-input {
+      width: 60px;
+      padding: 4px 8px;
+      background: var(--bg-500);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      text-align: center;
+    }
+
+    .status-select {
+      padding: var(--space-1) var(--space-2);
+      background: var(--bg-500);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: var(--text-xs);
+      cursor: pointer;
+    }
+
+    /* Access Denied overlay */
+    .access-denied {
+      padding: var(--space-16) var(--space-8);
+      text-align: center;
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      max-width: 600px;
+      margin: var(--space-12) auto;
+      box-shadow: var(--shadow-xl);
+    }
+
+    .access-denied-icon {
+      font-size: 5rem;
+      margin-bottom: var(--space-6);
+    }
+
+    .admin-charts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: var(--space-6);
+      margin-bottom: var(--space-8);
+    }
+
+    .chart-panel {
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+    }
+
+    .chart-panel-title {
+      font-weight: 700;
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-4);
+      color: var(--text-secondary);
+    }
+
+    /* Form popup/card style */
+    .admin-form-panel {
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      margin-bottom: var(--space-8);
+    }
+
+    .admin-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-4);
+    }
+
+    .form-group-admin {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group-admin label {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+    }
+
+    .form-group-admin input, .form-group-admin select, .form-group-admin textarea {
+      padding: var(--space-2) var(--space-3);
+      background: var(--bg-500);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: var(--text-sm);
+    }
+
+    @media (max-width: 1024px) {
+      .admin-layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="admin-page">
+    <div class="container">
+      
+      <!-- Admin Screen View Controller -->
+      <div id="admin-panel-viewport">
+        <!-- Rendered dynamically depending on Admin Login status -->
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('navbar-container').innerHTML = buildNavbar();
+    document.getElementById('footer-container').innerHTML = buildFooter();
+
+    // Setup localStorage cache for products and orders
+    const PRODUCT_STORAGE_KEY = 'shopnova_admin_products';
+    const ORDER_STORAGE_KEY = 'shopnova_orders';
+
+    function getAdminProducts() {
+      let saved = localStorage.getItem(PRODUCT_STORAGE_KEY);
+      if (!saved) {
+        localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(SHOPNOVA_DATA.products));
+        return SHOPNOVA_DATA.products;
+      }
+      return JSON.parse(saved);
+    }
+
+    function saveAdminProducts(prods) {
+      localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(prods));
+    }
+
+    function getAdminOrders() {
+      let saved = localStorage.getItem(ORDER_STORAGE_KEY);
+      if (!saved) {
+        localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(SHOPNOVA_DATA.demoOrders));
+        return SHOPNOVA_DATA.demoOrders;
+      }
+      return JSON.parse(saved);
+    }
+
+    function saveAdminOrders(ords) {
+      localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(ords));
+    }
+
+    // Active Admin Tab
+    let activeTab = 'dashboard';
+
+    // Verify Admin status
+    function checkAuth() {
+      const user = Auth.getCurrentUser();
+      const viewport = document.getElementById('admin-panel-viewport');
+
+      if (!Auth.isLoggedIn() || !user.isAdmin) {
+        // Render Access Denied
+        viewport.innerHTML = `
+          <div class="access-denied animate-fadeIn">
+            <div class="access-denied-icon">🔒</div>
+            <h2 class="text-3xl font-bold mb-3">Admin Access Denied</h2>
+            <p class="text-secondary mb-8">This page is restricted to administrator accounts only. Please log in with credentials that have administrative privileges.</p>
+            
+            <div style="display:flex; justify-content:center; gap: var(--space-4)">
+              <button class="btn btn-primary" onclick="loginDemoAdmin()">🔑 Login as Demo Admin</button>
+              <a href="login.html" class="btn btn-secondary">Go to Login Page</a>
+            </div>
+            
+            <div style="margin-top:var(--space-8); padding:var(--space-4); background:rgba(255,255,255,0.02); border-radius:var(--radius-lg); font-size:12px; text-align:left">
+              <strong>Admin Demo Credentials:</strong><br>
+              Email: <code>admin@shopnova.com</code><br>
+              Password: <code>admin1234</code>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // Render Admin Dashboard layout
+      viewport.innerHTML = `
+        <div class="admin-layout">
+          <aside class="admin-nav" aria-label="Admin Navigation">
+            <div class="admin-nav-item ${activeTab === 'dashboard' ? 'active' : ''}" onclick="switchTab('dashboard')">📊 Overview</div>
+            <div class="admin-nav-item ${activeTab === 'inventory' ? 'active' : ''}" onclick="switchTab('inventory')">📦 Inventory</div>
+            <div class="admin-nav-item ${activeTab === 'orders' ? 'active' : ''}" onclick="switchTab('orders')">🛒 Order Manager</div>
+            <div class="admin-nav-item ${activeTab === 'supabase' ? 'active' : ''}" onclick="switchTab('supabase')">⚡ Supabase Config</div>
+            <div class="admin-nav-item" onclick="Auth.logout()" style="margin-top: var(--space-8); border-top:1px solid var(--glass-border); padding-top:var(--space-4)">👋 Sign Out</div>
+          </aside>
+
+          <section class="admin-content-panel" id="admin-main-content">
+            <!-- Dynamic Sub-view rendering -->
+          </section>
+        </div>
+      `;
+
+      renderTabContent();
+    }
+
+    function loginDemoAdmin() {
+      const res = Auth.login('admin@shopnova.com', 'admin1234');
+      if (res.success) {
+        Notify.success('Welcome Administrator', 'Admin dashboard loaded successfully.');
+        // Re-authenticate and draw layout
+        checkAuth();
+        // Update navbar to show Admin session avatar
+        document.getElementById('navbar-container').innerHTML = buildNavbar();
+      } else {
+        Notify.error('Login Failed', res.error);
+      }
+    }
+
+    function switchTab(tabName) {
+      activeTab = tabName;
+      checkAuth();
+    }
+
+    function renderTabContent() {
+      const panel = document.getElementById('admin-main-content');
+      if (!panel) return;
+
+      const productsList = getAdminProducts();
+      const ordersList = getAdminOrders();
+
+      if (activeTab === 'dashboard') {
+        // Calculate metrics
+        const totalRevenue = ordersList.reduce((acc, order) => acc + order.total, 0);
+        const lowStockCount = productsList.filter(p => p.stock <= 10).length;
+
+        panel.innerHTML = `
+          <div class="section-title">
+            <h2>Overview & Analytics</h2>
+            <button class="btn btn-secondary btn-sm" onclick="resetMockDatabase()">🔄 Reset DB</button>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card stat-blue">
+              <div class="stat-card-title">Total Revenue</div>
+              <div class="stat-card-value">${formatPrice(totalRevenue)}</div>
+              <div class="stat-card-trend trend-up">▲ 14.2% <span style="color:var(--text-muted)">vs last month</span></div>
+            </div>
+            <div class="stat-card stat-green">
+              <div class="stat-card-title">Completed Orders</div>
+              <div class="stat-card-value">${ordersList.length}</div>
+              <div class="stat-card-trend trend-up">▲ 8.1% <span style="color:var(--text-muted)">vs last week</span></div>
+            </div>
+            <div class="stat-card stat-orange">
+              <div class="stat-card-title">Low Stock Alerts</div>
+              <div class="stat-card-value">${lowStockCount}</div>
+              <div class="stat-card-trend trend-down">⚠️ Action Needed <span style="color:var(--text-muted)">stock < 10</span></div>
+            </div>
+            <div class="stat-card stat-gold">
+              <div class="stat-card-title">Active Products</div>
+              <div class="stat-card-value">${productsList.length}</div>
+              <div class="stat-card-trend">Catalog size is healthy</div>
+            </div>
+          </div>
+
+          <!-- Charting section (Visual SVGs) -->
+          <div class="admin-charts">
+            <div class="chart-panel">
+              <div class="chart-panel-title">Sales Analytics (Weekly)</div>
+              <!-- Simple Responsive SVG Sparkline Bar Chart -->
+              <svg viewBox="0 0 400 150" style="width:100%; height: 140px;">
+                <g fill="var(--brand-primary)">
+                  <rect x="20" y="80" width="30" height="70" rx="3" opacity="0.4"/>
+                  <rect x="70" y="60" width="30" height="90" rx="3" opacity="0.5"/>
+                  <rect x="120" y="50" width="30" height="100" rx="3" opacity="0.6"/>
+                  <rect x="170" y="70" width="30" height="80" rx="3" opacity="0.7"/>
+                  <rect x="220" y="40" width="30" height="110" rx="3" opacity="0.8"/>
+                  <rect x="270" y="30" width="30" height="120" rx="3" opacity="0.9"/>
+                  <rect x="320" y="15" width="30" height="135" rx="3"/>
+                </g>
+                <text x="20" y="165" fill="var(--text-muted)" font-size="10">Mon</text>
+                <text x="70" y="165" fill="var(--text-muted)" font-size="10">Tue</text>
+                <text x="120" y="165" fill="var(--text-muted)" font-size="10">Wed</text>
+                <text x="170" y="165" fill="var(--text-muted)" font-size="10">Thu</text>
+                <text x="220" y="165" fill="var(--text-muted)" font-size="10">Fri</text>
+                <text x="270" y="165" fill="var(--text-muted)" font-size="10">Sat</text>
+                <text x="320" y="165" fill="var(--text-muted)" font-size="10">Sun</text>
+              </svg>
+            </div>
+            
+            <div class="chart-panel">
+              <div class="chart-panel-title">Revenue Category Split</div>
+              <!-- SVG Donut Chart -->
+              <svg viewBox="0 0 200 200" style="width:100%; height: 140px;">
+                <circle cx="100" cy="100" r="70" fill="none" stroke="var(--bg-500)" stroke-width="20"/>
+                <!-- Electronics Arc (45%) -->
+                <circle cx="100" cy="100" r="70" fill="none" stroke="var(--brand-primary)" stroke-width="20" 
+                  stroke-dasharray="198 440" stroke-dashoffset="0"/>
+                <!-- Fashion Arc (35%) -->
+                <circle cx="100" cy="100" r="70" fill="none" stroke="var(--brand-secondary)" stroke-width="20" 
+                  stroke-dasharray="154 440" stroke-dashoffset="-198"/>
+                <!-- Home/Others Arc (20%) -->
+                <circle cx="100" cy="100" r="70" fill="none" stroke="var(--brand-accent)" stroke-width="20" 
+                  stroke-dasharray="88 440" stroke-dashoffset="-352"/>
+              </svg>
+              <div style="display:flex; justify-content:space-around; font-size:10px; margin-top:10px;">
+                <span><span style="color:var(--brand-primary)">■</span> Electronics</span>
+                <span><span style="color:var(--brand-secondary)">■</span> Fashion</span>
+                <span><span style="color:var(--brand-accent)">■</span> Home & others</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Low Stock Table Overview -->
+          <h3>Critical Low Stock Items</h3>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Brand</th>
+                  <th>Price</th>
+                  <th>Stock Status</th>
+                  <th>Quick Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${productsList.filter(p => p.stock <= 10).slice(0, 5).map(p => `
+                  <tr>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.brand}</td>
+                    <td>${formatPrice(p.price)}</td>
+                    <td><span style="color: var(--brand-orange); font-weight:700">⚠️ Only ${p.stock} units</span></td>
+                    <td>
+                      <button class="btn btn-secondary btn-sm" onclick="quickRestock(${p.id})">⚡ Restock to 50</button>
+                    </td>
+                  </tr>
+                `).join('') || '<tr><td colspan="5" style="text-align:center">No low stock items!</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } 
+      
+      else if (activeTab === 'inventory') {
+        panel.innerHTML = `
+          <div class="section-title">
+            <h2>Inventory Management</h2>
+            <button class="btn btn-primary btn-sm" onclick="toggleAddProductForm()">➕ Add New Product</button>
+          </div>
+
+          <!-- Add Product Form Drawer -->
+          <div class="admin-form-panel" id="add-product-form" style="display:none">
+            <h4>Add New Product to Catalog</h4>
+            <form onsubmit="handleAddProductSubmit(event)" style="margin-top:var(--space-4)">
+              <div class="admin-form-grid">
+                <div class="form-group-admin">
+                  <label for="prod-name">Product Name</label>
+                  <input type="text" id="prod-name" required>
+                </div>
+                <div class="form-group-admin">
+                  <label for="prod-brand">Brand</label>
+                  <input type="text" id="prod-brand" required>
+                </div>
+                <div class="form-group-admin">
+                  <label for="prod-category">Category</label>
+                  <select id="prod-category">
+                    ${SHOPNOVA_DATA.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="form-group-admin">
+                  <label for="prod-price">Price ($)</label>
+                  <input type="number" id="prod-price" step="0.01" min="0.01" required>
+                </div>
+                <div class="form-group-admin">
+                  <label for="prod-stock">Initial Stock</label>
+                  <input type="number" id="prod-stock" min="1" required>
+                </div>
+                <div class="form-group-admin">
+                  <label for="prod-image">Image URL</label>
+                  <input type="url" id="prod-image" value="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop">
+                </div>
+              </div>
+              <div style="display:flex; justify-content:flex-end; gap: var(--space-3); margin-top:var(--space-4)">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="toggleAddProductForm()">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm">Add Product</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Products Table -->
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Product</th>
+                  <th>Brand</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${productsList.map(p => `
+                  <tr>
+                    <td><code>#${p.id}</code></td>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.brand}</td>
+                    <td>${p.category}</td>
+                    <td>${formatPrice(p.price)}</td>
+                    <td>
+                      <input type="number" class="quick-input" id="stock-val-${p.id}" value="${p.stock}" 
+                        onchange="updateSingleStock(${p.id}, this.value)">
+                    </td>
+                    <td>
+                      <button class="btn btn-secondary btn-sm" onclick="removeProduct(${p.id})" style="color:var(--brand-secondary); border-color:rgba(255,101,132,0.3)">Delete</button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } 
+      
+      else if (activeTab === 'orders') {
+        panel.innerHTML = `
+          <div class="section-title">
+            <h2>Order Tracking & Status</h2>
+          </div>
+
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Customer Address</th>
+                  <th>Items Count</th>
+                  <th>Total Price</th>
+                  <th>Status</th>
+                  <th>Track</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${ordersList.map(o => {
+                  const itemsCount = o.items.reduce((s, i) => s + i.qty, 0);
+                  return `
+                    <tr>
+                      <td><code style="color:var(--brand-primary); font-weight:700">${o.id}</code></td>
+                      <td>${o.date}</td>
+                      <td><span style="font-size:12px">${o.address || 'No address details'}</span></td>
+                      <td>${itemsCount}</td>
+                      <td><strong>${formatPrice(o.total)}</strong></td>
+                      <td>
+                        <select class="status-select" onchange="updateOrderStatus('${o.id}', this.value)">
+                          <option value="placed" ${o.status === 'placed' ? 'selected' : ''}>Placed</option>
+                          <option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option>
+                          <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                          <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                        </select>
+                      </td>
+                      <td>
+                        <a href="order-tracking.html?id=${o.id}" class="btn btn-secondary btn-sm">👁️ View</a>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (activeTab === 'supabase') {
+        const isClientSupabaseConnected = typeof isSupabaseMode !== 'undefined' && isSupabaseMode;
+        panel.innerHTML = `
+          <div class="section-title">
+            <h2>⚡ Database Integration Status</h2>
+            <div style="display:flex; gap:8px">
+              <span class="status-badge ${isBackendMode ? 'status-delivered' : 'status-processing'}">
+                Backend: ${isBackendMode ? '✅ Connected' : '⚠️ Offline'}
+              </span>
+              <span class="status-badge ${isClientSupabaseConnected ? 'status-delivered' : 'status-processing'}">
+                Supabase direct: ${isClientSupabaseConnected ? '✅ Active' : '⚠️ Static Fallback'}
+              </span>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-600); border:1px solid var(--glass-border); border-radius:var(--radius-lg); padding:var(--space-6); margin-bottom:var(--space-8)">
+            <h4>Active Supabase Settings</h4>
+            <div style="display:grid; grid-template-columns:180px 1fr; gap:var(--space-3); margin-top:var(--space-4); font-size:13px">
+              <span class="text-muted">Supabase URL:</span>
+              <code>https://gfxtakyqkzquhbbneera.supabase.co</code>
+              <span class="text-muted">Publishable Key:</span>
+              <code>sb_publishable_U147IqjY8VsRO-rQe_3vsg_vATt9M0_</code>
+              <span class="text-muted">Active Database Mode:</span>
+              <span>${isBackendMode ? '🟢 Full-Stack (Server queries Supabase + falls back to db.json)' : isClientSupabaseConnected ? '🔵 Serverless (Browser queries Supabase directly)' : '🟡 Local Storage fallbacks'}</span>
+            </div>
+          </div>
+
+          <div class="admin-charts" style="grid-template-columns:1fr">
+            <div class="chart-panel">
+              <div class="chart-panel-title">🛠️ Database Maintenance & Seeding</div>
+              <p class="text-sm text-secondary mb-4">Resetting the database seeds products and orders into your local <code>db.json</code> file, and also inserts them to your live Supabase database tables if they exist.</p>
+              
+              <div style="display:flex; gap:var(--space-4); margin-bottom:var(--space-6); flex-wrap:wrap">
+                <button class="btn btn-primary" onclick="syncNow()">🔄 Sync Data Now</button>
+                <button class="btn btn-secondary" onclick="exportDB()">📥 Export Local DB</button>
+                <button class="btn btn-danger" onclick="resetMockDatabase()">⚠️ Reset & Seed Database</button>
+              </div>
+
+              <h4>Required SQL Table Schema</h4>
+              <p class="text-xs text-muted mb-2">If you haven't created tables in your Supabase project, copy and paste this script into the <strong>SQL Editor</strong> tab of your Supabase dashboard:</p>
+              <pre style="background:var(--bg-900); padding:var(--space-4); border-radius:var(--radius-md); font-size:11px; overflow-x:auto; color:var(--text-primary); border:1px solid var(--glass-border); max-height:200px; user-select:all;"><code>-- Create products table
+create table if not exists products (
+  id bigint primary key,
+  name text not null,
+  brand text,
+  category text,
+  subcategory text,
+  price numeric,
+  original_price numeric,
+  discount numeric,
+  rating numeric,
+  review_count bigint,
+  stock bigint,
+  image text,
+  free_shipping boolean,
+  delivery_days int,
+  description text,
+  specs jsonb,
+  colors jsonb,
+  badge text
+);
+
+-- Create orders table
+create table if not exists orders (
+  id text primary key,
+  user_id text,
+  date text,
+  status text,
+  items jsonb,
+  total numeric,
+  shipping numeric,
+  address text
+);</code></pre>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Quick restock logic
+    async function quickRestock(id) {
+      const prods = getAdminProducts();
+      const p = prods.find(item => item.id === id);
+      if (p) {
+        p.stock = 50;
+        saveAdminProducts(prods);
+        if (isBackendMode) {
+          await apiRequest('PUT', `/products/${id}`, { stock: 50 });
+        }
+        renderTabContent();
+        Notify.success('Restocked!', `${p.name} stock level reset to 50.`);
+      }
+    }
+
+    // Update stock inline
+    async function updateSingleStock(id, val) {
+      const prods = getAdminProducts();
+      const p = prods.find(item => item.id === id);
+      if (p) {
+        p.stock = parseInt(val) || 0;
+        saveAdminProducts(prods);
+        if (isBackendMode) {
+          await apiRequest('PUT', `/products/${id}`, { stock: p.stock });
+        }
+        Notify.info('Stock Updated', `Updated stock for ${p.name}`);
+      }
+    }
+
+    // Update order status from dropdown
+    async function updateOrderStatus(orderId, status) {
+      const ords = getAdminOrders();
+      const order = ords.find(o => o.id === orderId);
+      if (order) {
+        order.status = status;
+        saveAdminOrders(ords);
+        if (isBackendMode) {
+          await apiRequest('PUT', `/orders/${orderId}`, { status });
+        }
+        Notify.success('Order Status Saved', `Status of order ${orderId} changed to ${status}.`);
+      }
+    }
+
+    // Toggle Add Product Form
+    function toggleAddProductForm() {
+      const form = document.getElementById('add-product-form');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Handle add product submit
+    async function handleAddProductSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('prod-name').value;
+      const brand = document.getElementById('prod-brand').value;
+      const category = document.getElementById('prod-category').value;
+      const price = parseFloat(document.getElementById('prod-price').value);
+      const stock = parseInt(document.getElementById('prod-stock').value);
+      const image = document.getElementById('prod-image').value;
+
+      const newProduct = {
+        name, brand, category, price,
+        originalPrice: price,
+        discount: 0,
+        rating: 5.0,
+        reviewCount: 0,
+        stock,
+        image,
+        images: [image],
+        badge: 'new',
+        tags: [category, brand.toLowerCase()],
+        description: 'No description provided.',
+        specs: {},
+        freeShipping: true,
+        deliveryDays: 3,
+        warranty: '1 Year'
+      };
+
+      if (isBackendMode) {
+        // Use backend API — it auto-assigns the id
+        const res = await apiRequest('POST', '/products', newProduct);
+        if (res.success) {
+          await syncDataWithBackend();
+          Notify.success('Product Added!', `${name} saved to database.`);
+        } else {
+          Notify.error('Failed to add product', res.error);
+          return;
+        }
+      } else {
+        const prods = getAdminProducts();
+        const nextId = prods.length > 0 ? Math.max(...prods.map(p => p.id)) + 1 : 1;
+        newProduct.id = nextId;
+        prods.unshift(newProduct);
+        saveAdminProducts(prods);
+        Notify.success('Catalog Updated', `Added new product ${name}`);
+      }
+
+      switchTab('inventory');
+    }
+
+    // Delete Product
+    async function removeProduct(id) {
+      if (confirm('Are you sure you want to delete this product?')) {
+        if (isBackendMode) {
+          const res = await apiRequest('DELETE', `/products/${id}`);
+          if (res.success) {
+            await syncDataWithBackend();
+            Notify.info('Product Removed', `Product ID #${id} has been deleted.`);
+          } else {
+            Notify.error('Delete failed', res.error);
+            return;
+          }
+        } else {
+          let prods = getAdminProducts();
+          prods = prods.filter(p => p.id !== id);
+          saveAdminProducts(prods);
+          Notify.info('Product Removed', `Product ID #${id} has been deleted.`);
+        }
+        renderTabContent();
+      }
+    }
+
+    // Sync data from backend
+    async function syncNow() {
+      if (!isBackendMode) { Notify.warning('Not connected', 'Please start the Node.js server first.'); return; }
+      await syncDataWithBackend();
+      renderTabContent();
+      Notify.success('Synced!', 'Latest data fetched from backend.');
+    }
+
+    // Export DB
+    async function exportDB() {
+      if (!isBackendMode) { Notify.warning('Not connected', 'Backend not running.'); return; }
+      const res = await apiRequest('GET', '/db/export');
+      if (res.success) {
+        const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'shopnova-db.json'; a.click();
+        URL.revokeObjectURL(url);
+        Notify.success('Exported!', 'Database downloaded as shopnova-db.json');
+      }
+    }
+
+    // Reset Database
+    async function resetMockDatabase() {
+      if (confirm('This will reset ALL data to defaults. Are you sure?')) {
+        if (isBackendMode) {
+          const res = await apiRequest('POST', '/db/reset');
+          if (res.success) {
+            await syncDataWithBackend();
+            Notify.success('Database Reset!', 'All data restored to factory defaults.');
+            renderTabContent();
+          }
+        } else {
+          localStorage.removeItem(PRODUCT_STORAGE_KEY);
+          localStorage.removeItem(ORDER_STORAGE_KEY);
+          Notify.info('Database Reset', 'Products and Orders data reloaded to defaults.');
+          renderTabContent();
+        }
+      }
+    }
+
+    // Initial auth run
+    checkAuth();
+    initApp();
+  </script>
+</body>
+</html>

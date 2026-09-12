@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Product details on ShopNova. Full specifications, customer reviews, and more." id="meta-description">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="" id="canonical-url">
+  <!-- Open Graph (Facebook, WhatsApp, Slack) -->
+  <meta property="og:type" content="product" />
+  <meta property="og:site_name" content="ShopNova" />
+  <meta property="og:title" content="ShopNova" id="og-title" />
+  <meta property="og:description" content="" id="og-description" />
+  <meta property="og:image" content="" id="og-image" />
+  <meta property="og:url" content="" id="og-url" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="" id="twitter-title" />
+  <meta name="twitter:description" content="" id="twitter-description" />
+  <meta name="twitter:image" content="" id="twitter-image" />
+  <title>Product Detail — ShopNova</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    /* Price Alert Buttons */
+    .alert-btns { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .btn-alert { display:flex; align-items:center; gap:6px; padding:8px 14px; border-radius:var(--radius-full); font-size:12px; font-weight:700; cursor:pointer; border:1px solid; transition:all 0.2s; background:transparent; }
+    .btn-alert-price { color:#FBBF24; border-color:rgba(251,191,36,0.4); }
+    .btn-alert-price:hover, .btn-alert-price.active { background:rgba(251,191,36,0.1); }
+    .btn-alert-stock { color:#43E97B; border-color:rgba(67,233,123,0.4); }
+    .btn-alert-stock:hover, .btn-alert-stock.active { background:rgba(67,233,123,0.1); }
+    /* Q&A Styles */
+    .qa-item { background:var(--bg-600); border:1px solid var(--glass-border); border-radius:var(--radius-lg); padding:var(--space-5); margin-bottom:var(--space-4); }
+    .qa-question { font-weight:700; font-size:var(--text-base); color:var(--text-primary); margin-bottom:var(--space-3); display:flex; gap:10px; }
+    .qa-q-icon { color:var(--brand-primary); font-size:18px; flex-shrink:0; }
+    .qa-answer { display:flex; gap:10px; padding:var(--space-3) 0 var(--space-3) var(--space-6); border-top:1px solid var(--glass-border); margin-top:var(--space-3); }
+    .qa-a-icon { color:var(--brand-accent); font-size:14px; flex-shrink:0; margin-top:2px; }
+    .qa-a-text { font-size:var(--text-sm); color:var(--text-secondary); line-height:1.6; }
+    .qa-official { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; color:var(--brand-primary); background:rgba(108,99,255,0.1); padding:2px 8px; border-radius:var(--radius-full); margin-left:8px; }
+    .qa-meta { font-size:11px; color:var(--text-muted); margin-top:4px; }
+    .qa-ask-form { background:var(--bg-600); border:1px solid var(--glass-border); border-radius:var(--radius-xl); padding:var(--space-6); margin-bottom:var(--space-6); }
+    /* Review upvote */
+    .vote-btn { background:transparent; border:1px solid var(--glass-border); padding:4px 10px; border-radius:var(--radius-md); font-size:12px; cursor:pointer; color:var(--text-muted); transition:all 0.2s; }
+    .vote-btn:hover { border-color:var(--brand-accent); color:var(--brand-accent); }
+    .vote-btn.voted { background:rgba(67,233,123,0.1); border-color:var(--brand-accent); color:var(--brand-accent); }
+    /* Review images */
+    .review-images { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .review-img-thumb { width:80px; height:80px; border-radius:var(--radius-md); object-fit:cover; cursor:pointer; border:2px solid transparent; transition:all 0.2s; }
+    .review-img-thumb:hover { border-color:var(--brand-primary); transform:scale(1.05); }
+    .review-img-preview { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .review-img-preview-item { position:relative; width:80px; height:80px; border-radius:var(--radius-md); overflow:hidden; }
+    .review-img-preview-item img { width:100%; height:100%; object-fit:cover; }
+    .review-img-preview-item .remove-img { position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:20px; height:20px; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .lightbox { display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.9); align-items:center; justify-content:center; cursor:pointer; }
+    .lightbox.active { display:flex; }
+    .lightbox img { max-width:90vw; max-height:90vh; border-radius:var(--radius-lg); object-fit:contain; }
+    /* Star filter */
+    .star-filter { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+    .star-filter-btn { padding:4px 12px; border-radius:var(--radius-full); font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--glass-border); background:transparent; color:var(--text-muted); transition:all 0.2s; }
+    .star-filter-btn:hover, .star-filter-btn.active { background:rgba(108,99,255,0.15); border-color:var(--brand-primary); color:var(--brand-primary); }
+    /* Customers Also Bought */
+    .also-bought-section { margin-top:var(--space-10); padding-top:var(--space-8); border-top:1px solid var(--glass-border); }
+  </style>
+  <style>
+    .detail-page { padding: var(--space-8) 0 var(--space-16); }
+
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      gap: var(--space-10);
+      margin-bottom: var(--space-12);
+      align-items: start;
+    }
+
+    /* Purchase Panel */
+    .purchase-panel {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      position: sticky;
+      top: 80px;
+    }
+
+    .product-detail-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: var(--space-4);
+    }
+
+    .product-detail-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-5);
+      flex-wrap: wrap;
+    }
+
+    .detail-price-section {
+      padding: var(--space-5) 0;
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      margin: var(--space-5) 0;
+    }
+
+    .detail-price-main {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: var(--space-2);
+    }
+
+    .detail-price-savings {
+      font-size: var(--text-sm);
+      color: var(--brand-accent);
+      font-weight: 600;
+    }
+
+    .option-section { margin-bottom: var(--space-5); }
+
+    .delivery-info {
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+
+    .delivery-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      padding: var(--space-2) 0;
+    }
+
+    .delivery-row + .delivery-row { border-top: 1px solid var(--glass-border); }
+
+    .delivery-row .icon { font-size: 18px; flex-shrink: 0; }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+    }
+
+    .action-secondary {
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    /* Stock Indicator */
+    .stock-indicator {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+    }
+
+    .stock-indicator.in-stock { color: var(--brand-accent); background: rgba(67,233,123,0.1); }
+    .stock-indicator.low-stock { color: var(--brand-orange); background: rgba(255,107,53,0.1); }
+    .stock-indicator.out-stock { color: #EF4444; background: rgba(239,68,68,0.1); }
+
+    /* Product Description Section */
+    .detail-info-section {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      margin-bottom: var(--space-8);
+    }
+
+    .detail-tab-content {
+      padding: var(--space-8);
+    }
+
+    .description-text {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: var(--space-6);
+    }
+
+    .specs-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .specs-table tr:nth-child(even) { background: var(--bg-600); }
+
+    .specs-table td {
+      padding: var(--space-3) var(--space-5);
+      font-size: var(--text-sm);
+      border: 1px solid var(--glass-border);
+    }
+
+    .specs-table td:first-child {
+      color: var(--text-muted);
+      font-weight: 600;
+      width: 35%;
+    }
+
+    .specs-table td:last-child { color: var(--text-primary); }
+
+    /* Review Form */
+    .review-form {
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+    }
+
+    .star-input {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .star-input span {
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all var(--transition-fast);
+    }
+
+    .star-input span.active { color: var(--brand-gold); }
+
+    /* Related Products */
+    .related-section {
+      margin-top: var(--space-12);
+      padding-top: var(--space-8);
+      border-top: 1px solid var(--glass-border);
+    }
+
+    @media (max-width: 1100px) {
+      .detail-layout { grid-template-columns: 1fr; }
+      .purchase-panel { position: static; }
+    }
+
+    @media (max-width: 768px) {
+      .action-secondary { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="detail-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb mb-6" id="breadcrumb" aria-label="Breadcrumb">
+        <span class="breadcrumb-item"><a href="index.html">Home</a></span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-item"><a href="products.html" id="bc-cat">Products</a></span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-item active" id="bc-product">Loading...</span>
+      </nav>
+
+      <div id="product-content">
+        <!-- Loaded by JS -->
+        <div class="empty-state">
+          <div class="spinner"></div>
+          <p>Loading product...</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/features.js"></script>
+  <script>
+    document.getElementById('navbar-container').innerHTML = buildNavbar();
+    document.getElementById('footer-container').innerHTML = buildFooter();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    const product = getProduct(productId);
+
+    if (!product) {
+      document.getElementById('product-content').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">😕</div>
+          <h3>Product Not Found</h3>
+          <p>This product doesn't exist or has been removed.</p>
+          <a href="products.html" class="btn btn-primary">Browse Products</a>
+        </div>
+      `;
+    } else {
+      (async () => {
+      document.title = `${product.name} — ShopNova`;
+
+      // ── SEO: Meta tags & Open Graph ──
+      const pageUrl = window.location.href;
+      const desc    = product.description || `Buy ${product.name} at ShopNova. Best price, fast delivery.`;
+      document.querySelector('#meta-description')?.setAttribute('content', desc);
+      document.querySelector('#canonical-url')?.setAttribute('href', pageUrl);
+      document.querySelector('#og-title')?.setAttribute('content', `${product.name} — ShopNova`);
+      document.querySelector('#og-description')?.setAttribute('content', desc);
+      document.querySelector('#og-image')?.setAttribute('content', product.image || '');
+      document.querySelector('#og-url')?.setAttribute('content', pageUrl);
+      document.querySelector('#twitter-title')?.setAttribute('content', `${product.name} — ShopNova`);
+      document.querySelector('#twitter-description')?.setAttribute('content', desc);
+      document.querySelector('#twitter-image')?.setAttribute('content', product.image || '');
+
+      // ── SEO: JSON-LD Structured Data (Schema.org Product) ──
+      const avgRatingForSchema = reviews.length
+        ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+        : product.rating;
+      const jsonLd = {
+        '@context': 'https://schema.org/',
+        '@type': 'Product',
+        name: product.name,
+        image: product.images && product.images.length ? product.images : [product.image],
+        description: product.description || desc,
+        brand: { '@type': 'Brand', name: product.brand || 'ShopNova' },
+        sku: String(product.id),
+        offers: {
+          '@type': 'Offer',
+          url: pageUrl,
+          priceCurrency: 'INR',
+          price: product.price.toFixed(2),
+          priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          availability: product.stock > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+          seller: { '@type': 'Organization', name: 'ShopNova' }
+        },
+        ...(reviews.length ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: avgRatingForSchema,
+            reviewCount: reviews.length,
+            bestRating: '5',
+            worstRating: '1'
+          }
+        } : {})
+      };
+      const schemaScript = document.createElement('script');
+      schemaScript.type  = 'application/ld+json';
+      schemaScript.id    = 'product-schema';
+      schemaScript.text  = JSON.stringify(jsonLd);
+      document.head.appendChild(schemaScript);
+
+      document.querySelector('meta[name="description"]')?.setAttribute('content', product.description);
+
+      // Breadcrumb
+      const cat = SHOPNOVA_DATA.categories.find(c => c.id === product.category);
+      document.getElementById('bc-cat').textContent = cat?.name || 'Products';
+      document.getElementById('bc-cat').href = `products.html?cat=${product.category}`;
+      document.getElementById('bc-product').textContent = product.name.substring(0, 40) + '...';
+
+      // Stock status
+      const stockStatus = getStockStatus(product.stock);
+
+      // Reviews data
+      const reviews = (typeof Reviews !== 'undefined') ? await Reviews.getAll(product.id) : (SHOPNOVA_DATA.reviews[product.id] || []);
+      const avgRating = reviews.length
+        ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+        : product.rating;
+
+      // Q&A data
+      const qa = (typeof QA !== 'undefined') ? QA.getAll(product.id) : ((SHOPNOVA_DATA.qa && SHOPNOVA_DATA.qa[product.id]) || []);
+
+      // Gallery images
+      const allImages = product.images || [product.image];
+      let activeImageIdx = 0;
+
+      // Selected options state
+      let selectedColor = product.colors?.[0] || null;
+      let selectedSize = product.sizes?.[0] || null;
+      let qty = 1;
+
+      document.getElementById('product-content').innerHTML = `
+        <!-- Detail Layout -->
+        <div class="detail-layout">
+
+          <!-- Gallery -->
+          <div>
+            <div class="product-gallery">
+              <div class="gallery-thumbnails" id="gallery-thumbs">
+                ${allImages.map((img, i) => `
+                  <div class="gallery-thumb ${i === 0 ? 'active' : ''}" onclick="setGalleryImage(${i})" role="button" aria-label="Image ${i+1}">
+                    <img src="${img}" alt="${product.name} image ${i+1}" loading="lazy">
+                  </div>
+                `).join('')}
+              </div>
+              <div class="gallery-main" id="gallery-main">
+                <img src="${allImages[0]}" alt="${product.name}" id="gallery-img" onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=600&fit=crop'">
+                <button class="gallery-nav prev" onclick="shiftGallery(-1)" aria-label="Previous image">‹</button>
+                <button class="gallery-nav next" onclick="shiftGallery(1)" aria-label="Next image">›</button>
+              </div>
+            </div>
+
+            <!-- Tags -->
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+              ${product.tags.map(t => `<span class="badge badge-primary">${t}</span>`).join('')}
+              ${product.freeShipping ? `<span class="badge badge-success">Free Shipping</span>` : ''}
+              ${product.isNew ? `<span class="badge badge-new">New</span>` : ''}
+            </div>
+          </div>
+
+          <!-- Purchase Panel -->
+          <div class="purchase-panel animate-fadeIn">
+
+            <div class="product-category" style="margin-bottom:8px">${product.brand} • ${product.subcategory || product.category}</div>
+            <h1 class="product-detail-title">${product.name}</h1>
+
+            <div class="product-detail-meta">
+              ${renderStars(product.rating, 16)}
+              <span class="text-sm text-muted">${product.rating} (${product.reviewCount.toLocaleString()} reviews)</span>
+              <span class="text-sm text-muted">|</span>
+              <span class="text-sm" style="color:var(--brand-accent)">✅ ${product.sold.toLocaleString()} sold</span>
+            </div>
+
+            <!-- Price -->
+            <div class="detail-price-section">
+              <div class="detail-price-main">${formatPrice(product.price)}</div>
+              <div class="flex items-center gap-4 mt-2">
+                ${product.originalPrice > product.price ? `<span class="price-original" style="font-size:1rem">${formatPrice(product.originalPrice)}</span>` : ''}
+                ${product.discount > 0 ? `<span class="price-discount" style="font-size:0.9rem">-${product.discount}% OFF</span>` : ''}
+              </div>
+              ${product.discount > 0 ? `<div class="detail-price-savings mt-2">💰 You save ${formatPrice(product.originalPrice - product.price)}</div>` : ''}
+              <!-- Price/Stock Alert Buttons -->
+              <div class="alert-btns">
+                <button class="btn-alert btn-alert-price" id="price-alert-btn" onclick="togglePriceAlert()">
+                  ${PriceAlerts && PriceAlerts.hasAlert(product.id,'price') ? '🔔 Price Alert On' : '💰 Notify Price Drop'}
+                </button>
+                ${product.stock === 0 ? `<button class="btn-alert btn-alert-stock" id="stock-alert-btn" onclick="toggleStockAlert()">📩 Notify Back in Stock</button>` : ''}
+              </div>
+            </div>
+
+            <!-- Stock -->
+            <div class="stock-indicator ${stockStatus.cls === 'success' ? 'in-stock' : stockStatus.cls === 'warning' ? 'low-stock' : 'out-stock'}" style="margin-bottom:16px;display:inline-flex">
+              ${stockStatus.cls === 'success' ? '✅' : stockStatus.cls === 'warning' ? '⚠️' : '❌'}
+              ${stockStatus.label}
+            </div>
+
+            <!-- Color Options -->
+            ${product.colors && product.colors.length > 0 ? `
+              <div class="option-section">
+                <div class="option-label">Color: <strong id="selected-color-name">Default</strong></div>
+                <div class="color-swatches">
+                  ${product.colors.map((c, i) => `
+                    <div class="color-swatch ${i === 0 ? 'selected' : ''}"
+                      style="background:${c}"
+                      onclick="selectColor('${c}', this)"
+                      title="Color ${i+1}" aria-label="Color ${i+1}">
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Size Options -->
+            ${product.sizes && product.sizes.length > 0 ? `
+              <div class="option-section">
+                <div class="option-label">Size: <strong id="selected-size-name">${product.sizes[0]}</strong></div>
+                <div class="size-options">
+                  ${product.sizes.map((s, i) => `
+                    <div class="size-option ${i === 0 ? 'selected' : ''}"
+                      onclick="selectSize('${s}', this)">
+                      ${s}
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Quantity -->
+            <div class="option-section">
+              <div class="option-label" style="margin-bottom:12px">Quantity</div>
+              <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                <div class="qty-selector">
+                  <button class="qty-btn" onclick="changeQty(-1)" aria-label="Decrease quantity">−</button>
+                  <span class="qty-value" id="detail-qty">1</span>
+                  <button class="qty-btn" onclick="changeQty(1)" aria-label="Increase quantity">+</button>
+                </div>
+                <span class="text-sm text-muted">${product.stock} units available</span>
+              </div>
+            </div>
+
+            <!-- Delivery Info -->
+            <div class="delivery-info">
+              <div class="delivery-row">
+                <span class="icon">🚚</span>
+                <span>${product.freeShipping ? '<strong style="color:var(--brand-accent)">Free Delivery</strong> on this item' : 'Standard delivery ₹99'}</span>
+              </div>
+              <div class="delivery-row">
+                <span class="icon">📅</span>
+                <span>Estimated delivery: <strong>${product.deliveryDays}-${product.deliveryDays + 2} business days</strong></span>
+              </div>
+              <div class="delivery-row">
+                <span class="icon">🔄</span>
+                <span>Free returns within <strong>30 days</strong></span>
+              </div>
+              ${product.warranty !== 'N/A' ? `
+              <div class="delivery-row">
+                <span class="icon">🛡️</span>
+                <span>Warranty: <strong>${product.warranty}</strong></span>
+              </div>` : ''}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button class="btn btn-cart btn-lg w-full" onclick="addToCart()" id="add-cart-btn" aria-label="Add to cart">
+                🛒 Add to Cart
+              </button>
+              <button class="btn btn-buy-now btn-lg w-full" onclick="buyNow()" aria-label="Buy now">
+                ⚡ Buy Now
+              </button>
+              <div class="action-secondary">
+                <button class="btn btn-secondary flex-1" id="wish-btn" onclick="handleWishlist()" aria-label="Toggle wishlist">
+                  ${Wishlist.isInWishlist(product.id) ? '❤️ Wishlisted' : '🤍 Add to Wishlist'}
+                </button>
+                <button class="btn btn-secondary" onclick="shareProduct()" aria-label="Share product" style="padding: 12px 16px">
+                  📤 Share
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Description / Specs / Reviews / Q&A Tabs -->
+        <div class="detail-info-section">
+          <div class="tabs" role="tablist">
+            <button class="tab-btn active" onclick="switchTab('desc', this)" role="tab" aria-selected="true" id="tab-desc">Description</button>
+            <button class="tab-btn" onclick="switchTab('specs', this)" role="tab" aria-selected="false" id="tab-specs">Specifications</button>
+            <button class="tab-btn" onclick="switchTab('reviews', this)" role="tab" aria-selected="false" id="tab-reviews">
+              Reviews (${reviews.length})
+            </button>
+            <button class="tab-btn" onclick="switchTab('qa', this)" role="tab" aria-selected="false" id="tab-qa">
+              Q&amp;A (${qa.length})
+            </button>
+          </div>
+
+          <!-- Description -->
+          <div class="detail-tab-content" id="pane-desc">
+            <p class="description-text">${product.description}</p>
+            <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">What's in the Box</h3>
+            <ul style="list-style:disc;padding-left:24px;color:var(--text-secondary);font-size:0.9rem;line-height:2">
+              <li>${product.name}</li>
+              <li>Documentation & Quick Start Guide</li>
+              ${product.warranty !== 'N/A' ? `<li>Warranty Card (${product.warranty})</li>` : ''}
+            </ul>
+          </div>
+
+          <!-- Specs -->
+          <div class="detail-tab-content hidden" id="pane-specs">
+            <table class="specs-table">
+              <tbody>
+                ${Object.entries(product.specs || {}).map(([k, v]) => `
+                  <tr>
+                    <td>${k}</td>
+                    <td>${v}</td>
+                  </tr>
+                `).join('')}
+                <tr><td>Category</td><td>${SHOPNOVA_DATA.categories.find(c => c.id === product.category)?.name || product.category}</td></tr>
+                <tr><td>Brand</td><td>${product.brand}</td></tr>
+                <tr><td>SKU</td><td>SN-${String(product.id).padStart(5, '0')}</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Reviews -->
+          <div class="detail-tab-content hidden" id="pane-reviews">
+
+            <!-- Rating Summary -->
+            <div class="rating-summary">
+              <div class="rating-big">
+                <div class="rating-big-num">${avgRating}</div>
+                <div class="rating-big-stars">${renderStars(Number(avgRating), 18)}</div>
+                <div class="rating-big-count">${product.reviewCount.toLocaleString()} reviews</div>
+              </div>
+              <div class="rating-bars">
+                ${[5,4,3,2,1].map(star => {
+                  const count = reviews.filter(r => r.rating === star).length;
+                  const pct = reviews.length ? (count / reviews.length * 100) : (star === 5 ? 70 : star === 4 ? 20 : star === 3 ? 7 : 2);
+                  return `
+                    <div class="rating-bar-row">
+                      <span class="rating-bar-label">${star}⭐</span>
+                      <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${pct}%"></div></div>
+                      <span class="rating-bar-count">${count || Math.round(product.reviewCount * pct / 100)}</span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Star filter -->
+            <div class="star-filter" id="star-filter">
+              <button class="star-filter-btn active" onclick="filterReviews(0, this)">All</button>
+              ${[5,4,3,2,1].map(s => `<button class="star-filter-btn" onclick="filterReviews(${s}, this)">${s}⭐</button>`).join('')}
+            </div>
+
+            <!-- Write Review -->
+            ${Auth.isLoggedIn() ? `
+            <div class="review-form">
+              <h4 style="font-weight:700;margin-bottom:16px">✍️ Write a Review</h4>
+              <div class="option-label">Your Rating</div>
+              <div class="star-input" id="star-input">
+                ${[1,2,3,4,5].map(i => `<span onclick="setReviewRating(${i})" data-val="${i}" role="button" aria-label="${i} stars">★</span>`).join('')}
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" id="review-title" placeholder="Review title" aria-label="Review title">
+              </div>
+              <div class="form-group">
+                <textarea class="form-control" id="review-text" rows="4" placeholder="Share your experience with this product..." aria-label="Review text"></textarea>
+              </div>
+              <input type="file" id="review-images" accept="image/*" multiple style="display:none">
+              <button class="btn btn-secondary" onclick="document.getElementById('review-images').click()" style="margin-bottom:12px" aria-label="Add photos">📷 Add Photos</button>
+              <div class="review-img-preview" id="review-img-preview"></div>
+              <button class="btn btn-primary" onclick="submitReview()" aria-label="Submit review" style="margin-top:12px">⭐ Submit Review</button>
+            </div>
+            ` : `
+            <div style="text-align:center;padding:24px;background:var(--bg-600);border-radius:var(--radius-lg);margin-bottom:24px">
+              <p class="text-muted mb-4">Please log in to write a review</p>
+              <a href="login.html" class="btn btn-primary">Login to Review</a>
+            </div>
+            `}
+
+            <!-- Review List -->
+            <div id="reviews-list">
+              ${renderReviewsList(reviews, product.id)}
+            </div>
+          </div>
+
+          <!-- Q&A Pane -->
+          <div class="detail-tab-content hidden" id="pane-qa">
+            <!-- Ask Question Form -->
+            <div class="qa-ask-form">
+              <h4 style="font-weight:700;margin-bottom:14px">❓ Ask a Question</h4>
+              ${Auth.isLoggedIn() ? `
+                <div class="form-group">
+                  <textarea class="form-control" id="qa-question-input" rows="3" placeholder="What would you like to know about this product?" aria-label="Question"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="submitQuestion()" aria-label="Submit question">Submit Question</button>
+              ` : `
+                <p class="text-muted">Please <a href="login.html" style="color:var(--brand-primary)">log in</a> to ask a question.</p>
+              `}
+            </div>
+
+            <!-- Q&A List -->
+            <div id="qa-list">
+              ${renderQAList(qa, product.id)}
+            </div>
+          </div>
+        </div>
+
+        <!-- Customers Also Bought -->
+        <div class="also-bought-section" id="also-bought-section">
+          <div class="section-header" style="margin-bottom:var(--space-5)">
+            <div>
+              <div class="section-badge orange">🛒 Frequently Bought Together</div>
+              <h2 class="section-title">Customers Also Bought</h2>
+            </div>
+          </div>
+          <div class="products-grid" id="also-bought-grid"></div>
+        </div>
+
+        <!-- Related Products -->
+        <div class="related-section">
+          <div class="section-header">
+            <div>
+              <div class="section-badge purple">✨ You May Also Like</div>
+              <h2 class="section-title">Related Products</h2>
+            </div>
+          </div>
+          <div class="products-grid" id="related-grid"></div>
+        </div>
+      `;
+
+      // Track this product view for recommendations
+      if (typeof RecommendationEngine !== 'undefined') RecommendationEngine.trackView(product.id);
+
+      // Q&A data
+      const qa = (typeof QA !== 'undefined') ? QA.getAll(product.id) : (SHOPNOVA_DATA.qa && SHOPNOVA_DATA.qa[product.id] || []);
+
+      // Helper: render reviews list with upvotes
+      function renderReviewsList(reviewList, pId) {
+        if (!reviewList.length) return `
+          <div class="empty-state" style="padding:40px">
+            <div class="empty-icon">💬</div>
+            <h3>No Reviews Yet</h3>
+            <p>Be the first to review this product!</p>
+          </div>`;
+        return reviewList.map(r => {
+          const hasVotedHelp = (typeof Reviews !== 'undefined') ? Reviews.hasVoted(pId, r.id) === 'helpful' : false;
+          const hasVotedUnhelp = (typeof Reviews !== 'undefined') ? Reviews.hasVoted(pId, r.id) === 'unhelpful' : false;
+          const reviewImages = (r.images && r.images.length) ? `
+            <div class="review-images">
+              ${r.images.map(img => `<img src="${img}" class="review-img-thumb" onclick="openLightbox('${img}')" alt="Review image" loading="lazy">`).join('')}
+            </div>
+          ` : '';
+          return `
+          <div class="review-card mb-4" data-rating="${r.rating}" data-id="${r.id}">
+            <div class="review-header">
+              <div class="reviewer-info">
+                <div class="reviewer-avatar">${r.avatar}</div>
+                <div>
+                  <div class="reviewer-name">${r.user}</div>
+                  <div class="review-date">${r.date}</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                ${renderStars(r.rating)}
+                ${r.verified ? `<span class="verified-badge">✅ Verified Purchase</span>` : ''}
+              </div>
+            </div>
+            <div class="review-title">${r.title}</div>
+            <p class="review-text">${r.text}</p>
+            ${reviewImages}
+            <div class="review-footer" style="gap:8px">
+              <span style="font-size:12px;color:var(--text-muted)">Helpful?</span>
+              <button class="vote-btn ${hasVotedHelp ? 'voted' : ''}" id="v-h-${r.id}" onclick="voteReview('${r.id}','helpful')" aria-label="Mark helpful">
+                👍 ${r.helpful || 0}
+              </button>
+              <button class="vote-btn ${hasVotedUnhelp ? 'voted' : ''}" id="v-u-${r.id}" onclick="voteReview('${r.id}','unhelpful')" aria-label="Mark unhelpful">
+                👎 ${r.unhelpful || 0}
+              </button>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      // Helper: render Q&A list
+      function renderQAList(qaList, pId) {
+        if (!qaList.length) return `
+          <div class="empty-state" style="padding:40px">
+            <div class="empty-icon">❓</div>
+            <h3>No Questions Yet</h3>
+            <p>Be the first to ask a question about this product!</p>
+          </div>`;
+        return qaList.map(q => `
+          <div class="qa-item">
+            <div class="qa-question">
+              <span class="qa-q-icon">Q</span>
+              <div>
+                <div>${q.question}</div>
+                <div class="qa-meta">Asked by ${q.askedBy} · ${q.date}</div>
+              </div>
+            </div>
+            ${q.answers.map(a => `
+              <div class="qa-answer">
+                <span class="qa-a-icon">A</span>
+                <div>
+                  <div class="qa-a-text">${a.answer}</div>
+                  <div class="qa-meta">
+                    ${a.answeredBy}
+                    ${a.isOfficial ? '<span class="qa-official">✓ Official</span>' : ''}
+                    · ${a.date}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+            ${Auth.isLoggedIn() ? `
+              <div style="margin-top:10px;padding-left:24px">
+                <input type="text" class="form-control" id="ans-input-${q.id}" placeholder="Write an answer..." style="font-size:12px;padding:8px 12px;margin-bottom:6px">
+                <button class="btn btn-secondary btn-sm" onclick="submitAnswer('${q.id}')">Post Answer</button>
+              </div>
+            ` : ''}
+          </div>
+        `).join('');
+      }
+
+      // Related products
+      const related = getRelatedProducts(product, 4);
+      document.getElementById('related-grid').innerHTML = related.map(p => buildProductCard(p)).join('');
+
+      // Customers Also Bought
+      if (typeof RecommendationEngine !== 'undefined') {
+        const alsoBought = RecommendationEngine.getCustomersAlsoBought(product, 4);
+        const grid = document.getElementById('also-bought-grid');
+        if (grid) grid.innerHTML = alsoBought.map(p => buildProductCard(p)).join('');
+      }
+
+      // Gallery functions
+      window.setGalleryImage = function(idx) {
+        activeImageIdx = idx;
+        document.getElementById('gallery-img').src = allImages[idx];
+        document.querySelectorAll('.gallery-thumb').forEach((t, i) => t.classList.toggle('active', i === idx));
+      };
+
+      window.shiftGallery = function(dir) {
+        const next = (activeImageIdx + dir + allImages.length) % allImages.length;
+        setGalleryImage(next);
+      };
+
+      // Option selectors
+      window.selectColor = function(color, el) {
+        selectedColor = color;
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+      };
+
+      window.selectSize = function(size, el) {
+        selectedSize = size;
+        document.querySelectorAll('.size-option').forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('selected-size-name').textContent = size;
+      };
+
+      // Quantity
+      window.changeQty = function(dir) {
+        qty = Math.max(1, Math.min(product.stock, qty + dir));
+        document.getElementById('detail-qty').textContent = qty;
+      };
+
+      // Cart actions
+      window.addToCart = function() {
+        const opts = {};
+        if (selectedColor) opts.color = selectedColor;
+        if (selectedSize) opts.size = selectedSize;
+        Cart.addItem(product.id, qty, opts);
+      };
+
+      window.buyNow = function() {
+        addToCart();
+        setTimeout(() => window.location.href = 'checkout.html', 500);
+      };
+
+      // Wishlist
+      window.handleWishlist = function() {
+        const added = Wishlist.toggle(product.id);
+        const btn = document.getElementById('wish-btn');
+        if (btn) btn.innerHTML = added ? '❤️ Wishlisted' : '🤍 Add to Wishlist';
+      };
+
+      // Share
+      window.shareProduct = function() {
+        if (navigator.share) {
+          navigator.share({ title: product.name, text: product.description, url: window.location.href });
+        } else {
+          navigator.clipboard.writeText(window.location.href).then(() => {
+            Notify.success('Link copied!', 'Product link copied to clipboard');
+          });
+        }
+      };
+
+      // Tabs
+      window.switchTab = function(id, btn) {
+        document.querySelectorAll('.detail-tab-content').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`pane-${id}`).classList.remove('hidden');
+        btn.classList.add('active');
+      };
+
+      // Review rating
+      let reviewRating = 5;
+      window.setReviewRating = function(val) {
+        reviewRating = val;
+        document.querySelectorAll('#star-input span').forEach((s, i) => s.classList.toggle('active', i < val));
+      };
+      document.querySelectorAll('#star-input span')?.forEach(s => s.classList.add('active'));
+
+      // Review image preview
+      window.previewReviewImages = function(files) {
+        const container = document.getElementById('review-img-preview');
+        if (!container || !files.length) return;
+        container.innerHTML = '';
+        Array.from(files).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const div = document.createElement('div');
+            div.className = 'review-img-preview-item';
+            div.innerHTML = `<img src="${e.target.result}"><button class="remove-img" onclick="this.parentElement.remove()">✕</button>`;
+            container.appendChild(div);
+          };
+          reader.readAsDataURL(file);
+        });
+      };
+      document.getElementById('review-images')?.addEventListener('change', (e) => previewReviewImages(e.target.files));
+
+      // Lightbox
+      window.openLightbox = function(url) {
+        const lb = document.createElement('div');
+        lb.className = 'lightbox active';
+        lb.innerHTML = `<img src="${url}" alt="Review image"><span style="position:absolute;top:20px;right:30px;color:white;font-size:40px;cursor:pointer;z-index:10" onclick="this.parentElement.remove()">×</span>`;
+        lb.onclick = (e) => { if (e.target === lb) lb.remove(); };
+        document.body.appendChild(lb);
+      };
+
+      // Star filter
+      window.filterReviews = async function(star, btn) {
+        document.querySelectorAll('.star-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const allReviews = (typeof Reviews !== 'undefined') ? await Reviews.getAll(product.id) : reviews;
+        const filtered = star === 0 ? allReviews : allReviews.filter(r => r.rating === star);
+        document.getElementById('reviews-list').innerHTML = renderReviewsList(filtered, product.id);
+      };
+
+      // Vote on review
+      window.voteReview = async function(reviewId, type) {
+        if (typeof Reviews === 'undefined') return;
+        const result = await Reviews.vote(product.id, reviewId, type);
+        if (result.alreadyVoted) { Notify.info('Already voted', 'You\'ve already voted on this review.'); return; }
+        if (result.success && result.review) {
+          const r = result.review;
+          const helpBtn = document.getElementById(`v-h-${reviewId}`);
+          const unhelpBtn = document.getElementById(`v-u-${reviewId}`);
+          if (helpBtn) { helpBtn.textContent = `👍 ${r.helpful || 0}`; if (type==='helpful') helpBtn.classList.add('voted'); }
+          if (unhelpBtn) { unhelpBtn.textContent = `👎 ${r.unhelpful || 0}`; if (type==='unhelpful') unhelpBtn.classList.add('voted'); }
+          Notify.success('Thanks for your feedback!', '');
+        }
+      };
+
+      // Submit review
+      window.submitReview = async function() {
+        const title = document.getElementById('review-title')?.value?.trim();
+        const text = document.getElementById('review-text')?.value?.trim();
+        if (!title || !text) { Notify.warning('Please fill in all fields', ''); return; }
+        const user = Auth.getCurrentUser();
+        let images = [];
+        const fileInput = document.getElementById('review-images');
+        if (fileInput && fileInput.files && fileInput.files.length > 0) {
+          try {
+            const formData = new FormData();
+            for (const f of fileInput.files) formData.append('images', f);
+            const token = getAuthToken ? getAuthToken() : '';
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const uploadRes = await fetch('/api/uploads/review-image', { method: 'POST', headers, body: formData });
+            const uploadData = await uploadRes.json();
+            if (uploadData.success) images = uploadData.urls;
+          } catch (e) {
+            console.warn('Image upload failed:', e);
+          }
+        }
+        const newReview = { id: 'r' + Date.now(), user: user.name, avatar: user.avatar, rating: reviewRating,
+          date: new Date().toISOString().split('T')[0], title, text, verified: true, helpful: 0, unhelpful: 0, images };
+        let allReviews;
+        if (typeof Reviews !== 'undefined') { allReviews = await Reviews.submit(product.id, newReview); }
+        else { if (!SHOPNOVA_DATA.reviews[product.id]) SHOPNOVA_DATA.reviews[product.id] = []; SHOPNOVA_DATA.reviews[product.id].unshift(newReview); allReviews = SHOPNOVA_DATA.reviews[product.id]; }
+        document.getElementById('review-title').value = '';
+        document.getElementById('review-text').value = '';
+        document.getElementById('review-images').value = '';
+        document.getElementById('review-img-preview').innerHTML = '';
+        Notify.success('Review submitted! ⭐', 'Thank you for your feedback');
+        document.getElementById('reviews-list').innerHTML = renderReviewsList(allReviews, product.id);
+      };
+
+      // Q&A
+      window.submitQuestion = function() {
+        const input = document.getElementById('qa-question-input');
+        if (!input || !input.value.trim()) { Notify.warning('Please enter a question', ''); return; }
+        if (typeof QA !== 'undefined') {
+          const newQ = QA.askQuestion(product.id, input.value);
+          const allQA = QA.getAll(product.id);
+          document.getElementById('qa-list').innerHTML = renderQAList(allQA, product.id);
+          input.value = '';
+          Notify.success('Question posted! ❓', 'Our team and community will answer soon.');
+        }
+      };
+
+      window.submitAnswer = function(questionId) {
+        const input = document.getElementById(`ans-input-${questionId}`);
+        if (!input || !input.value.trim()) return;
+        if (typeof QA !== 'undefined') {
+          QA.answerQuestion(product.id, questionId, input.value);
+          const allQA = QA.getAll(product.id);
+          document.getElementById('qa-list').innerHTML = renderQAList(allQA, product.id);
+          Notify.success('Answer posted! 💬', 'Thank you for helping the community.');
+        }
+      };
+
+      // Price alerts
+      window.togglePriceAlert = function() {
+        if (typeof PriceAlerts === 'undefined') return;
+        if (PriceAlerts.hasAlert(product.id, 'price')) {
+          PriceAlerts.removeAlert(product.id, 'price');
+          const btn = document.getElementById('price-alert-btn');
+          if (btn) btn.textContent = '💰 Notify Price Drop';
+          Notify.info('Alert removed', 'Price drop alert has been cancelled.');
+        } else {
+          PriceAlerts.subscribePriceDrop(product.id, product.price);
+          const btn = document.getElementById('price-alert-btn');
+          if (btn) btn.textContent = '🔔 Price Alert On';
+          PushNotifications.init();
+        }
+      };
+
+      window.toggleStockAlert = function() {
+        if (typeof PriceAlerts === 'undefined') return;
+        PriceAlerts.subscribeStock(product.id);
+      };
+      })();
+    }
+
+    initApp();
+  </script>
+</body>
+</html>

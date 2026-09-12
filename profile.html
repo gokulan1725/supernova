@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage your ShopNova account — orders, wishlist, profile settings, and more.">
+  <title>My Account — ShopNova</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .profile-page { padding: var(--space-8) 0 var(--space-16); }
+
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: var(--space-6);
+      align-items: start;
+    }
+
+    /* Sidebar */
+    .profile-sidebar {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      position: sticky;
+      top: 80px;
+    }
+
+    .profile-header-card {
+      background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(236,72,153,0.1));
+      border-bottom: 1px solid var(--glass-border);
+      padding: var(--space-8) var(--space-6);
+      text-align: center;
+      position: relative;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-full);
+      background: var(--grad-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      margin: 0 auto var(--space-4);
+      box-shadow: 0 8px 30px rgba(108,99,255,0.4);
+      position: relative;
+    }
+
+    .avatar-edit {
+      position: absolute;
+      bottom: 0;
+      right: -4px;
+      width: 28px;
+      height: 28px;
+      background: var(--bg-700);
+      border: 2px solid var(--glass-border);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .avatar-edit:hover { background: var(--brand-primary); border-color: var(--brand-primary); }
+
+    .profile-name {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .profile-email {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      margin-bottom: var(--space-4);
+    }
+
+    .tier-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 700;
+    }
+
+    .tier-gold { background: rgba(255,215,0,0.2); color: var(--brand-gold); border: 1px solid rgba(255,215,0,0.3); }
+    .tier-bronze { background: rgba(180,120,60,0.2); color: #B4783C; border: 1px solid rgba(180,120,60,0.3); }
+    .tier-platinum { background: rgba(192,192,192,0.2); color: #C0C0C0; border: 1px solid rgba(192,192,192,0.3); }
+
+    /* Nav Menu */
+    .profile-nav { padding: var(--space-3); }
+
+    .profile-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+
+    .profile-nav-item:hover {
+      background: var(--glass-bg);
+      color: var(--text-primary);
+    }
+
+    .profile-nav-item.active {
+      background: rgba(108,99,255,0.12);
+      color: var(--brand-primary);
+      font-weight: 600;
+    }
+
+    .profile-nav-item .nav-icon { font-size: 18px; }
+
+    .profile-nav-item .badge-count {
+      margin-left: auto;
+      background: var(--brand-primary);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 20px;
+      height: 20px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Main Content */
+    .profile-content {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      min-height: 500px;
+    }
+
+    .content-header {
+      padding: var(--space-6);
+      border-bottom: 1px solid var(--glass-border);
+      background: var(--bg-600);
+    }
+
+    .content-body { padding: var(--space-6); }
+
+    /* Stats Row */
+    .account-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .account-stat {
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      text-align: center;
+      transition: all var(--transition-base);
+      cursor: default;
+    }
+
+    .account-stat:hover {
+      border-color: var(--brand-primary);
+      transform: translateY(-2px);
+    }
+
+    .account-stat-value {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: 900;
+      background: var(--grad-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .account-stat-label {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Points Progress */
+    .points-progress {
+      background: linear-gradient(135deg, rgba(108,99,255,0.1), rgba(255,215,0,0.05));
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      margin-bottom: var(--space-6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .points-value {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 900;
+      background: var(--grad-gold);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Recent orders mini */
+    .order-mini-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-3);
+      transition: all var(--transition-fast);
+      cursor: pointer;
+    }
+
+    .order-mini-card:hover {
+      border-color: var(--brand-primary);
+      background: rgba(108,99,255,0.05);
+    }
+
+    /* Settings Form */
+    .settings-section {
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      margin-bottom: var(--space-5);
+    }
+
+    .settings-title {
+      font-size: var(--text-lg);
+      font-weight: 700;
+      margin-bottom: var(--space-5);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    /* Notification Settings */
+    .notification-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .notification-item:last-child { border-bottom: none; }
+
+    /* Toggle Switch */
+    .toggle {
+      position: relative;
+      width: 48px;
+      height: 26px;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-400);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: var(--radius-full);
+      transition: all var(--transition-base);
+    }
+
+    .toggle input:checked + .toggle-slider { background: var(--brand-primary); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(22px); }
+
+    @media (max-width: 1024px) {
+      .profile-layout { grid-template-columns: 1fr; }
+      .profile-sidebar { position: static; }
+    }
+
+    @media (max-width: 768px) {
+      .account-stats { grid-template-columns: repeat(2, 1fr); }
+      .profile-nav { display: flex; flex-wrap: wrap; gap: 4px; }
+      .profile-nav-item { flex: 1; min-width: 120px; justify-content: center; text-align: center; }
+      .profile-nav-item .nav-icon { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="profile-page">
+    <div class="container">
+
+      <nav class="breadcrumb mb-6" aria-label="Breadcrumb">
+        <span class="breadcrumb-item"><a href="index.html">Home</a></span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-item active">My Account</span>
+      </nav>
+
+      <div class="profile-layout" id="profile-main">
+        <!-- Rendered by JS -->
+        <div class="empty-state">
+          <div class="spinner"></div>
+          <p>Loading profile...</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('navbar-container').innerHTML = buildNavbar();
+    document.getElementById('footer-container').innerHTML = buildFooter();
+
+    const user = Auth.getCurrentUser();
+
+    if (!user) {
+      window.location.href = 'login.html';
+    } else {
+      let activeSection = 'dashboard';
+
+      function renderProfile() {
+        const orders = SHOPNOVA_DATA.demoOrders;
+        const wishItems = Wishlist.getItems();
+
+        document.getElementById('profile-main').innerHTML = `
+          <!-- Sidebar -->
+          <aside class="profile-sidebar animate-fadeIn">
+            <div class="profile-header-card">
+              <div class="profile-avatar">
+                ${user.avatar}
+                <div class="avatar-edit" onclick="Notify.info('Avatar upload', 'Upload your photo to personalize your profile')" title="Edit avatar" aria-label="Edit avatar">✏️</div>
+              </div>
+              <div class="profile-name">${user.name}</div>
+              <div class="profile-email">${user.email}</div>
+              <div class="tier-badge tier-${(user.tier || 'bronze').toLowerCase()}">
+                ${user.tier === 'Gold' ? '🥇' : user.tier === 'Platinum' ? '💎' : '🥉'}
+                ${user.tier || 'Bronze'} Member
+              </div>
+            </div>
+            <nav class="profile-nav" role="navigation" aria-label="Profile navigation">
+              ${[
+                { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+                { id: 'orders', icon: '📦', label: 'My Orders', badge: orders.length },
+                { id: 'wishlist', icon: '❤️', label: 'Wishlist', badge: wishItems.length },
+                { id: 'addresses', icon: '📍', label: 'Addresses' },
+                { id: 'security', icon: '🔐', label: 'Security & 2FA' },
+                { id: 'settings', icon: '⚙️', label: 'Settings' },
+                { id: 'notifications', icon: '🔔', label: 'Notifications', badge: SHOPNOVA_DATA.notifications.filter(n => !n.read).length },
+              ].map(item => `
+                <div class="profile-nav-item ${activeSection === item.id ? 'active' : ''}"
+                  onclick="switchSection('${item.id}')" role="menuitem">
+                  <span class="nav-icon">${item.icon}</span>
+                  ${item.label}
+                  ${item.badge ? `<span class="badge-count">${item.badge}</span>` : ''}
+                </div>
+              `).join('')}
+              <div class="profile-nav-item" style="margin-top:8px;border-top:1px solid var(--glass-border);padding-top:16px"
+                onclick="Auth.logout()">
+                <span class="nav-icon">🚪</span>
+                Sign Out
+              </div>
+            </nav>
+          </aside>
+
+          <!-- Content -->
+          <div class="profile-content animate-fadeInRight" id="profile-content-area">
+            <!-- Rendered by switchSection() -->
+          </div>
+        `;
+
+        switchSection(activeSection);
+      }
+
+      async function switchSection(section) {
+        activeSection = section;
+
+        // Update active nav
+        document.querySelectorAll('.profile-nav-item').forEach(el => {
+          el.classList.toggle('active', el.textContent.trim().includes(getSectionLabel(section)));
+        });
+
+        const content = document.getElementById('profile-content-area');
+        content.innerHTML = await getSectionContent(section);
+
+        // Re-init any carousels or features
+        initScrollReveal();
+      }
+
+      function getSectionLabel(s) {
+        const map = { dashboard: 'Dashboard', orders: 'My Orders', wishlist: 'Wishlist', addresses: 'Addresses', security: 'Security & 2FA', settings: 'Settings', notifications: 'Notifications' };
+        return map[s] || s;
+      }
+
+      async function getSectionContent(section) {
+        const orders = window._profileOrders || [];
+
+        switch (section) {
+          case 'dashboard': return renderDashboard(orders);
+          case 'orders': return renderOrders(orders);
+          case 'wishlist': return renderWishlist();
+          case 'addresses': return renderAddresses();
+          case 'security': return await renderSecurity();
+          case 'settings': return renderSettings();
+          case 'notifications': return renderNotifications();
+          default: return '';
+        }
+      }
+
+      async function renderSecurity() {
+        const currUser = Auth.getCurrentUser() || user;
+        const is2FA = currUser.twoFactorEnabled === true;
+        const logs = (typeof Auth.getSecurityLogs === 'function') ? await Auth.getSecurityLogs() : [];
+
+        return `
+          <div class="content-header">
+            <h2 class="font-bold text-xl">Security & 2FA</h2>
+            <p class="text-sm text-muted mt-1">Manage Two-Factor Authentication and view account activity.</p>
+          </div>
+          <div class="content-body">
+            <div class="settings-section">
+              <h3 class="font-bold text-lg mb-2">🔐 Two-Factor Authentication (2FA)</h3>
+              <p class="text-sm text-muted mb-4">
+                Protects your account with a 6-digit verification code sent to <strong>${currUser.email}</strong> on every sign-in attempt.
+              </p>
+              <div class="notification-item" style="padding:16px 0;">
+                <div>
+                  <div style="font-weight:700;font-size:15px;color:var(--text-primary);">
+                    2FA Protection: <span style="color:${is2FA ? 'var(--brand-accent)' : '#EF4444'}">${is2FA ? '✅ ACTIVE (Protected)' : '❌ INACTIVE'}</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">
+                    ${is2FA ? 'Every login attempt will require 6-digit email OTP verification.' : 'Enable 2FA to prevent unauthorized access to your account and payments.'}
+                  </div>
+                </div>
+                <button class="btn ${is2FA ? 'btn-secondary' : 'btn-primary'}" onclick="handleToggle2FA()">
+                  ${is2FA ? '🔓 Disable 2FA' : '🔐 Enable 2FA'}
+                </button>
+              </div>
+            </div>
+
+            <div class="settings-section mt-6">
+              <h3 class="font-bold text-lg mb-4">🛡️ Account Security Activity Logs</h3>
+              ${logs.length > 0 ? `
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  ${logs.map(l => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--bg-700);border-radius:12px;border:1px solid var(--glass-border);">
+                      <div>
+                        <div style="font-weight:600;font-size:13px;color:var(--text-primary);">⚡ ${l.event}</div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">IP Address: ${l.ip || '127.0.0.1'}</div>
+                      </div>
+                      <div style="font-size:11px;color:var(--text-muted);">${new Date(l.timestamp).toLocaleString()}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : `
+                <div style="font-size:13px;color:var(--text-muted);text-align:center;padding:20px 0;">No security events recorded yet.</div>
+              `}
+            </div>
+          </div>
+        `;
+      }
+
+      window.handleToggle2FA = async function() {
+        const res = await Auth.toggle2FA();
+        if (res.success) {
+          if (typeof Notify !== 'undefined') Notify.success('Security Updated', res.message);
+          await switchSection('security');
+        } else {
+          if (typeof Notify !== 'undefined') Notify.error('Error', res.error);
+        }
+      };
+
+      function renderDashboard(orders) {
+        return `
+          <div class="content-header">
+            <h2 class="font-bold text-xl">Dashboard</h2>
+            <p class="text-sm text-muted mt-1">Welcome back, ${user.name.split(' ')[0]}! 👋</p>
+          </div>
+          <div class="content-body">
+
+            <!-- Stats -->
+            <div class="account-stats">
+              <div class="account-stat reveal">
+                <div class="account-stat-value">${orders.length}</div>
+                <div class="account-stat-label">Total Orders</div>
+              </div>
+              <div class="account-stat reveal delay-100">
+                <div class="account-stat-value">${Wishlist.getCount()}</div>
+                <div class="account-stat-label">Wishlist Items</div>
+              </div>
+              <div class="account-stat reveal delay-200">
+                <div class="account-stat-value">2,840</div>
+                <div class="account-stat-label">Reward Points</div>
+              </div>
+              <div class="account-stat reveal delay-300">
+                <div class="account-stat-value">${formatPrice(orders.reduce((s, o) => s + o.total, 0))}</div>
+                <div class="account-stat-label">Total Spent</div>
+              </div>
+            </div>
+
+            <!-- Points Card -->
+            <div class="points-progress reveal">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">
+                <div>
+                  <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">🏆 Your Reward Points</div>
+                  <div class="points-value">2,840</div>
+                  <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">≈ ₹2,840 credit to redeem</div>
+                </div>
+                <div style="text-align:right">
+                  <div class="tier-badge tier-gold" style="margin-bottom:8px">🥇 Gold Member</div>
+                  <div style="font-size:11px;color:var(--text-muted)">160 points to Platinum</div>
+                </div>
+              </div>
+              <div style="margin-top:16px">
+                <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:6px">
+                  <span>Gold (2000 pts)</span>
+                  <span>Platinum (3000 pts)</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:84%;background:var(--grad-gold)"></div>
+                </div>
+              </div>
+              <button class="btn btn-outline btn-sm" style="margin-top:12px" onclick="Notify.info('Redeem Points', 'Choose products to redeem your points on')">Redeem Points →</button>
+            </div>
+
+            <!-- Referral Card -->
+            <div class="points-progress reveal" id="referral-card">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">
+                <div>
+                  <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">👥 Refer & Earn</div>
+                  <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">Share your code. Give ₹500, get ₹500 per friend.</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:11px;color:var(--text-muted)" id="referral-uses">0 referrals</div>
+                  <div style="font-size:11px;color:var(--brand-secondary)" id="referral-earned">₹0 earned</div>
+                </div>
+              </div>
+              <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <input type="text" id="referral-code-display" readonly style="background:var(--bg-600);border:1px solid var(--glass-border);border-radius:var(--radius-md);padding:8px 12px;color:var(--brand-primary);font-weight:700;font-size:13px;width:160px;text-align:center" value="Loading...">
+                <button class="btn btn-primary btn-sm" onclick="copyReferralCode()">📋 Copy Code</button>
+                <button class="btn btn-secondary btn-sm" onclick="Notify.info('Share', 'Share your referral link with friends!')">📤 Share</button>
+              </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <h3 class="font-bold mb-4">Recent Orders</h3>
+            ${orders.slice(0, 3).map(order => `
+              <div class="order-mini-card reveal" onclick="switchSection('orders')">
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase">${order.id}</div>
+                  <div style="font-size:13px;color:var(--text-secondary);margin-top:2px">${order.date} • ${order.items.length} item(s)</div>
+                </div>
+                <div style="margin-left:auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                  <span class="order-status ${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+                  <span style="font-weight:700">${formatPrice(order.total)}</span>
+                </div>
+              </div>
+            `).join('')}
+            ${!orders.length ? `<p class="text-muted text-sm">No orders yet. <a href="products.html" style="color:var(--brand-primary)">Start shopping!</a></p>` : ''}
+          </div>
+        `;
+      }
+
+      function renderOrders(orders) {
+        return `
+          <div class="content-header">
+            <h2 class="font-bold text-xl">My Orders</h2>
+            <p class="text-sm text-muted mt-1">${orders.length} order${orders.length !== 1 ? 's' : ''} placed</p>
+          </div>
+          <div class="content-body">
+            ${!orders.length ? `
+              <div class="empty-state">
+                <div class="empty-icon">📦</div>
+                <h3>No Orders Yet</h3>
+                <p>Place your first order to see it here.</p>
+                <a href="products.html" class="btn btn-primary">Browse Products</a>
+              </div>
+            ` : orders.map(order => {
+              const items = order.items.slice(0, 3);
+              const extra = order.items.length - 3;
+              return `
+                <div class="order-card mb-5 reveal">
+                  <div class="order-card-header">
+                    <div>
+                      <div class="order-id">Order ${order.id}</div>
+                      <div style="font-size:12px;color:var(--text-muted);margin-top:3px">Placed on ${order.date}</div>
+                    </div>
+                    <span class="order-status ${order.status}">${order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+                  </div>
+                  <div class="order-card-body">
+                    <div class="order-items-preview">
+                      ${items.map(item => {
+                        const p = getProduct(item.productId);
+                        return p ? `<div class="order-item-thumb"><img src="${p.image}" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop'"></div>` : '';
+                      }).join('')}
+                      ${extra > 0 ? `<div class="order-item-more">+${extra}</div>` : ''}
+                    </div>
+                    <div class="order-meta">
+                      <div class="order-meta-item"><div class="order-meta-label">Items</div><div class="order-meta-value">${order.items.length}</div></div>
+                      <div class="order-meta-item"><div class="order-meta-label">Total</div><div class="order-meta-value">${formatPrice(order.total)}</div></div>
+                      <div class="order-meta-item"><div class="order-meta-label">Delivery</div><div class="order-meta-value">${order.address}</div></div>
+                    </div>
+                  </div>
+                  <div class="order-card-footer">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                      ${order.status !== 'cancelled' ? `<a href="order-tracking.html?id=${order.id}" class="btn btn-outline btn-sm">📍 Track Order</a>` : ''}
+                      ${order.status === 'delivered' ? `<button class="btn btn-secondary btn-sm" onclick="Notify.info('Return initiated', 'Return request submitted for order ${order.id}')">↩️ Return</button>` : ''}
+                      <button class="btn btn-ghost btn-sm" onclick="Notify.info('Invoice', 'Invoice downloading for order ${order.id}')">📄 Invoice</button>
+                    </div>
+                    <div style="font-weight:700;font-size:1.1rem">${formatPrice(order.total)}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      function renderWishlist() {
+        const ids = Wishlist.getItems();
+        const products = ids.map(id => getProduct(id)).filter(Boolean);
+        return `
+          <div class="content-header">
+            <h2 class="font-bold text-xl">My Wishlist</h2>
+            <p class="text-sm text-muted mt-1">${products.length} saved item${products.length !== 1 ? 's' : ''}</p>
+          </div>
+          <div class="content-body">
+            ${!products.length ? `
+              <div class="empty-state">
+                <div class="empty-icon">🤍</div>
+                <h3>Your Wishlist is Empty</h3>
+                <p>Save items you love to your wishlist for later.</p>
+                <a href="products.html" class="btn btn-primary">Discover Products</a>
+              </div>
+            ` : `
+              <div class="products-grid">
+                ${products.map(p => buildProductCard(p)).join('')}
+              </div>
+            `}
+          </div>
+        `;
+      }
+
+      function renderAddresses() {
+        return `
+          <div class="content-header">
+            <h2 class="font-bold text-xl">My Addresses</h2>
+          </div>
+          <div class="content-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+              <div style="background:var(--bg-600);border:2px solid var(--brand-primary);border-radius:var(--radius-xl);padding:24px;position:relative">
+                <div style="font-size:11px;font-weight:700;color:var(--brand-primary);text-transform:uppercase;margin-bottom:8px">Default Address 🏠</div>
+                <div style="font-weight:700;margin-bottom:4px">${user.name}</div>
+                <div style="font-size:13px;color:var(--text-secondary);line-height:1.7">
+                  123 Main Street, Apt 4B<br>
+                  New York, NY 10001<br>
+                  United States<br>
+                  📞 +1 (555) 000-0000
+                </div>
+                <div style="display:flex;gap:8px;margin-top:16px">
+                  <button class="btn btn-outline btn-sm" onclick="Notify.info('Edit address', 'Address editor coming soon')">✏️ Edit</button>
+                </div>
+              </div>
+              <div style="background:var(--bg-600);border:1px dashed var(--glass-border);border-radius:var(--radius-xl);padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:all 0.25s"
+                onmouseover="this.style.borderColor='var(--brand-primary)'" onmouseout="this.style.borderColor='var(--glass-border)'"
+                onclick="Notify.info('Add address', 'Address form coming soon')">
+                <span style="font-size:40px;opacity:0.4">+</span>
+                <span style="font-size:14px;color:var(--text-muted)">Add New Address</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderSettings() {
+        return `
+          <div class="content-header">
+            <h2 class="font-bold text-xl">Account Settings</h2>
+          </div>
+          <div class="content-body">
+
+            <!-- Personal Info -->
+            <div class="settings-section">
+              <div class="settings-title">👤 Personal Information</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div class="form-group">
+                  <label class="form-label" for="set-firstname">First Name</label>
+                  <input type="text" id="set-firstname" class="form-control" value="${user.name.split(' ')[0] || ''}" autocomplete="given-name">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="set-lastname">Last Name</label>
+                  <input type="text" id="set-lastname" class="form-control" value="${user.name.split(' ')[1] || ''}" autocomplete="family-name">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-email">Email Address</label>
+                <input type="email" id="set-email" class="form-control" value="${user.email}" autocomplete="email">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-phone">Phone Number</label>
+                <input type="tel" id="set-phone" class="form-control" placeholder="+1 (555) 000-0000" autocomplete="tel">
+              </div>
+              <button class="btn btn-primary" onclick="Notify.success('Saved!', 'Your profile has been updated')">Save Changes</button>
+            </div>
+
+            <!-- Security -->
+            <div class="settings-section">
+              <div class="settings-title">🔒 Security</div>
+              <div class="form-group">
+                <label class="form-label" for="set-current-pw">Current Password</label>
+                <input type="password" id="set-current-pw" class="form-control" placeholder="••••••••" autocomplete="current-password">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-new-pw">New Password</label>
+                <input type="password" id="set-new-pw" class="form-control" placeholder="Min 8 characters" autocomplete="new-password">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-confirm-pw">Confirm New Password</label>
+                <input type="password" id="set-confirm-pw" class="form-control" placeholder="Repeat new password" autocomplete="new-password">
+              </div>
+              <button class="btn btn-primary" onclick="Notify.success('Password changed!', 'Your password has been updated successfully')">Update Password</button>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="settings-section" style="border-color:rgba(239,68,68,0.2)">
+              <div class="settings-title" style="color:#EF4444">⚠️ Danger Zone</div>
+              <p class="text-sm text-muted mb-4">Permanently delete your account and all associated data. This action cannot be undone.</p>
+              <button class="btn btn-danger" onclick="Notify.warning('Account deletion', 'Please contact support to delete your account')">Delete Account</button>
+            </div>
+
+          </div>
+        `;
+      }
+
+      function renderNotifications() {
+        const notifs = SHOPNOVA_DATA.notifications;
+        return `
+          <div class="content-header">
+            <h2 class="font-bold text-xl">Notifications</h2>
+            <p class="text-sm text-muted mt-1">${notifs.filter(n => !n.read).length} unread</p>
+          </div>
+          <div class="content-body">
+            ${notifs.map(n => `
+              <div style="display:flex;gap:16px;padding:16px;background:${n.read ? 'var(--bg-600)' : 'rgba(108,99,255,0.08)'};border:1px solid ${n.read ? 'var(--glass-border)' : 'rgba(108,99,255,0.2)'};border-radius:var(--radius-lg);margin-bottom:12px;cursor:pointer;transition:all 0.2s"
+                onmouseover="this.style.borderColor='var(--brand-primary)'" onmouseout="this.style.borderColor='${n.read ? 'var(--glass-border)' : 'rgba(108,99,255,0.2)'}'">
+                <span style="font-size:24px">${n.icon}</span>
+                <div style="flex:1">
+                  <div style="font-weight:${n.read ? '500' : '700'};font-size:14px;color:var(--text-primary)">${n.title}</div>
+                  <div style="font-size:12px;color:var(--text-secondary);margin-top:3px">${n.message}</div>
+                  <div style="font-size:11px;color:var(--text-muted);margin-top:6px">${n.time}</div>
+                </div>
+                ${!n.read ? `<span style="width:8px;height:8px;background:var(--brand-primary);border-radius:50%;flex-shrink:0;margin-top:6px"></span>` : ''}
+              </div>
+            `).join('')}
+
+            <!-- Notification Preferences -->
+            <h3 class="font-bold mt-8 mb-4">Notification Preferences</h3>
+            <div class="settings-section">
+              ${[
+                ['Order Updates', 'Get notified about order status changes'],
+                ['Flash Deals', 'Be the first to know about limited-time offers'],
+                ['New Arrivals', 'Stay updated with new products'],
+                ['Price Drops', 'Get alerts when wishlist items go on sale'],
+                ['Review Requests', 'Reminders to review purchased items'],
+              ].map(([title, desc]) => `
+                <div class="notification-item">
+                  <div>
+                    <div style="font-size:14px;font-weight:600">${title}</div>
+                    <div style="font-size:12px;color:var(--text-muted)">${desc}</div>
+                  </div>
+                  <label class="toggle" aria-label="${title} notification">
+                    <input type="checkbox" checked onchange="Notify.info('Setting saved', '${title} notifications updated')">
+                    <div class="toggle-slider"></div>
+                  </label>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // Fetch fresh orders from backend before rendering profile
+      async function initProfile() {
+        // Show loading state for orders section
+        window._profileOrders = [];
+
+        if (typeof apiRequest !== 'undefined') {
+          try {
+            const res = await apiRequest('GET', '/orders/me');
+            if (res.success && res.data) {
+              window._profileOrders = res.data;
+            } else {
+              // Fallback: try old userId query
+              const fallback = await apiRequest('GET', `/orders?userId=${user.id}`);
+              if (fallback.success && fallback.data) {
+                window._profileOrders = fallback.data;
+              }
+            }
+          } catch (e) {
+            console.warn('Could not fetch orders from backend, using cached data.');
+            window._profileOrders = SHOPNOVA_DATA.demoOrders.filter(o => o.userId === user.id);
+          }
+        } else {
+          window._profileOrders = SHOPNOVA_DATA.demoOrders.filter(o => o.userId === user.id);
+        }
+
+        // Init referral code
+        if (typeof Referrals !== 'undefined') {
+          const stats = Referrals.getStats();
+          const codeInput = document.getElementById('referral-code-display');
+          const usesEl = document.getElementById('referral-uses');
+          const earnedEl = document.getElementById('referral-earned');
+          if (codeInput) codeInput.value = stats.code || 'Loading...';
+          if (usesEl) usesEl.textContent = `${stats.uses || 0} referrals`;
+          if (earnedEl) earnedEl.textContent = `${formatPrice(stats.totalEarned || 0)} earned`;
+        }
+
+        renderProfile();
+        initApp();
+      }
+
+      window.copyReferralCode = function() {
+        const input = document.getElementById('referral-code-display');
+        if (!input) return;
+        input.select();
+        navigator.clipboard.writeText(input.value).then(() => {
+          Notify.success('Code copied!', 'Share it with friends to earn rewards.');
+        }).catch(() => {
+          Notify.warning('Copy failed', 'Please copy the code manually.');
+        });
+      };
+
+      initProfile();
+    }
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ShopNova — Your premium e-commerce destination. Shop millions of products from top brands. Fast delivery, easy returns, best prices guaranteed.">
+  <meta name="keywords" content="online shopping, e-commerce, electronics, fashion, home, deals">
+  <meta name="author" content="ShopNova Inc.">
+  <meta property="og:title" content="ShopNova — Shop Smart, Shop Premium">
+  <meta property="og:description" content="Discover the best deals on electronics, fashion, home & more.">
+  <title>ShopNova — Shop Smart, Shop Premium</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    /* ── Homepage-Specific Styles ─────────────────────── */
+
+    /* Hero Section */
+    .hero-section {
+      padding: var(--space-6) 0 var(--space-12);
+      position: relative;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: var(--space-5);
+    }
+
+    /* Main Hero */
+    .hero-main {
+      position: relative;
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+      min-height: 460px;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, #0A0B0E 0%, #141720 40%, #1A1E2E 70%, #0F1117 100%);
+      border: 1px solid var(--glass-border);
+    }
+
+    .hero-main-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.3;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .hero-orb-1 {
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, #6C63FF 0%, transparent 70%);
+      top: -100px; right: -50px;
+      animation-delay: 0s;
+    }
+
+    .hero-orb-2 {
+      width: 250px; height: 250px;
+      background: radial-gradient(circle, #EC4899 0%, transparent 70%);
+      bottom: -80px; left: -30px;
+      animation-delay: -3s;
+    }
+
+    .hero-orb-3 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, #43E97B 0%, transparent 70%);
+      top: 50%; left: 40%;
+      animation-delay: -5s;
+    }
+
+    .hero-content-wrap {
+      position: relative;
+      z-index: 2;
+      padding: var(--space-12) var(--space-10);
+      max-width: 580px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-4);
+      background: rgba(108, 99, 255, 0.15);
+      border: 1px solid rgba(108, 99, 255, 0.35);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      color: var(--brand-primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: var(--space-5);
+      animation: fadeInDown 0.7s ease 0.1s both;
+    }
+
+    .hero-main-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+      animation: fadeInUp 0.7s ease 0.2s both;
+    }
+
+    .hero-main-desc {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: var(--space-8);
+      animation: fadeInUp 0.7s ease 0.3s both;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+      animation: fadeInUp 0.7s ease 0.4s both;
+    }
+
+    .hero-stats-row {
+      display: flex;
+      gap: var(--space-8);
+      margin-top: var(--space-10);
+      animation: fadeInUp 0.7s ease 0.5s both;
+    }
+
+    .hero-stat-item { text-align: left; }
+
+    /* Hero Sidebar Banners */
+    .hero-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .hero-mini-banner {
+      flex: 1;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: transform var(--transition-base);
+      min-height: 140px;
+      display: flex;
+      align-items: center;
+      padding: var(--space-5);
+      border: 1px solid var(--glass-border);
+    }
+
+    .hero-mini-banner:hover { transform: translateX(4px); }
+
+    .hero-mini-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.5s ease;
+    }
+
+    .hero-mini-banner:hover .hero-mini-bg { transform: scale(1.05); }
+
+    .hero-mini-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(10,11,14,0.95) 40%, transparent);
+    }
+
+    .hero-mini-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-mini-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--brand-orange);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: var(--space-2);
+    }
+
+    .hero-mini-title {
+      font-size: var(--text-base);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .hero-mini-sub {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+    }
+
+    /* Offer Strip */
+    .offers-section { padding: var(--space-8) 0; }
+
+    /* Category Scroll */
+    .categories-section { padding: var(--space-12) 0; }
+
+    .categories-scroll {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: var(--space-4);
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: var(--space-2);
+    }
+
+    .categories-scroll::-webkit-scrollbar { display: none; }
+
+    /* Flash Deals */
+    .deals-section { padding: var(--space-12) 0; }
+
+    .deals-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-6);
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+
+    .deals-header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+      flex-wrap: wrap;
+    }
+
+    .deals-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-5);
+    }
+
+    /* Featured Products */
+    .featured-section { padding: var(--space-12) 0; }
+
+    /* Trending */
+    .trending-section { padding: var(--space-12) 0; }
+
+    /* Brand Logos */
+    .brands-section {
+      padding: var(--space-10) 0;
+      background: var(--bg-800);
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      margin: var(--space-12) 0;
+    }
+
+    .brands-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-8);
+      flex-wrap: wrap;
+    }
+
+    .brand-logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: var(--text-xl);
+      color: var(--text-muted);
+      transition: color var(--transition-fast);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .brand-logo:hover { color: var(--text-primary); }
+
+    /* Newsletter */
+    .newsletter-section {
+      padding: var(--space-16) 0;
+      background: linear-gradient(135deg, rgba(108,99,255,0.08) 0%, rgba(139,92,246,0.04) 50%, rgba(236,72,153,0.06) 100%);
+      border-radius: var(--radius-2xl);
+      border: 1px solid rgba(108,99,255,0.15);
+      margin: 0 0 var(--space-16);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .newsletter-bg-orb {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(108,99,255,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .newsletter-bg-orb.left { left: -200px; top: -200px; }
+    .newsletter-bg-orb.right { right: -200px; bottom: -200px; }
+
+    .newsletter-content { position: relative; z-index: 1; }
+
+    .newsletter-icon {
+      font-size: 48px;
+      margin-bottom: var(--space-4);
+      display: block;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    .newsletter-title {
+      font-family: var(--font-display);
+      font-size: var(--text-4xl);
+      font-weight: 800;
+      margin-bottom: var(--space-3);
+    }
+
+    .newsletter-subtitle {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-8);
+    }
+
+    .newsletter-form {
+      display: flex;
+      gap: var(--space-3);
+      max-width: 480px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .newsletter-input {
+      flex: 1;
+      min-width: 220px;
+      padding: var(--space-4) var(--space-5);
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-full);
+      color: var(--text-primary);
+      font-size: var(--text-base);
+      transition: all var(--transition-fast);
+    }
+
+    .newsletter-input:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+    }
+
+    /* Why Shop Section */
+    .why-section { padding: var(--space-12) 0; }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-5);
+    }
+
+    .why-card {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8) var(--space-6);
+      text-align: center;
+      transition: all var(--transition-base);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .why-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--grad-card);
+      opacity: 0;
+      transition: opacity var(--transition-base);
+    }
+
+    .why-card:hover::before { opacity: 1; }
+
+    .why-card:hover {
+      border-color: var(--brand-primary);
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-brand);
+    }
+
+    .why-icon {
+      font-size: 40px;
+      margin-bottom: var(--space-4);
+      display: block;
+      position: relative;
+    }
+
+    .why-title {
+      font-size: var(--text-lg);
+      font-weight: 700;
+      margin-bottom: var(--space-3);
+      position: relative;
+    }
+
+    .why-desc {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      line-height: 1.7;
+      position: relative;
+    }
+
+    /* Recently Viewed */
+    .recently-section { padding: 0 0 var(--space-12); }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-sidebar { flex-direction: row; }
+      .hero-mini-banner { min-height: 120px; }
+      .deals-grid { grid-template-columns: repeat(2, 1fr); }
+      .categories-scroll { grid-template-columns: repeat(5, 1fr); }
+      .why-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .hero-main { min-height: 360px; }
+      .hero-content-wrap { padding: var(--space-8) var(--space-6); }
+      .hero-main-title { font-size: 2rem; }
+      .hero-sidebar { flex-direction: column; }
+      .brands-inner { justify-content: center; }
+      .categories-scroll { grid-template-columns: repeat(5, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .deals-grid { grid-template-columns: 1fr; }
+      .why-grid { grid-template-columns: 1fr; }
+      .hero-stats-row { gap: var(--space-6); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div id="navbar-container"></div>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-grid">
+
+        <!-- Main Hero Banner -->
+        <div class="hero-main" id="hero-main" onclick="window.location.href='products.html'" style="cursor:pointer">
+          <div class="hero-main-bg">
+            <div class="hero-orb hero-orb-1"></div>
+            <div class="hero-orb hero-orb-2"></div>
+            <div class="hero-orb hero-orb-3"></div>
+          </div>
+          <div class="hero-content-wrap">
+            <div class="hero-eyebrow">
+              <span>🔥</span> Summer Sale — Up to 50% OFF
+            </div>
+            <h1 class="hero-main-title">
+              Discover <span class="grad-text">Premium</span><br>
+              Products at<br>
+              <span class="grad-text-gold">Unbeatable Prices</span>
+            </h1>
+            <p class="hero-main-desc">
+              Shop from millions of products across all categories. Fast delivery, easy returns, and exclusive member rewards.
+            </p>
+            <div class="hero-cta-group">
+              <button class="btn btn-primary btn-xl" onclick="event.stopPropagation(); window.location.href='products.html'" aria-label="Shop Now">
+                🛍️ Shop Now
+              </button>
+              <button class="btn btn-secondary btn-xl" onclick="event.stopPropagation(); window.location.href='products.html?sale=true'" aria-label="View Deals">
+                ⚡ View Deals
+              </button>
+            </div>
+            <div class="hero-stats-row">
+              <div class="hero-stat-item">
+                <div class="hero-stat-num grad-text font-display">50M+</div>
+                <div class="hero-stat-label text-muted text-xs">Products</div>
+              </div>
+              <div class="hero-stat-item">
+                <div class="hero-stat-num grad-text font-display">10M+</div>
+                <div class="hero-stat-label text-muted text-xs">Happy Customers</div>
+              </div>
+              <div class="hero-stat-item">
+                <div class="hero-stat-num grad-text font-display">190+</div>
+                <div class="hero-stat-label text-muted text-xs">Countries</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Sidebar -->
+        <div class="hero-sidebar">
+          <div class="hero-mini-banner" onclick="window.location.href='products.html?cat=electronics'" style="background:linear-gradient(135deg,#0F1117,#1A1E2E)">
+            <div class="hero-mini-content">
+              <div class="hero-mini-tag">🎧 New Arrivals</div>
+              <div class="hero-mini-title">Best Headphones<br>of 2024</div>
+              <div class="hero-mini-sub">From ₹2,499</div>
+              <button class="btn btn-sm btn-primary" style="margin-top:12px" aria-label="Shop Audio">Shop Audio →</button>
+            </div>
+          </div>
+          <div class="hero-mini-banner" onclick="window.location.href='products.html?cat=fashion'" style="background:linear-gradient(135deg,#1A0A1E,#2E1A3A)">
+            <div class="hero-mini-content">
+              <div class="hero-mini-tag" style="color:var(--brand-secondary)">👗 Fashion</div>
+              <div class="hero-mini-title">Summer<br>Collection</div>
+              <div class="hero-mini-sub">Up to 40% off</div>
+              <button class="btn btn-sm btn-primary" style="margin-top:12px" aria-label="Shop Fashion">Shop Now →</button>
+            </div>
+          </div>
+          <div class="hero-mini-banner" onclick="window.location.href='products.html?cat=home'" style="background:linear-gradient(135deg,#0A1A0A,#1A2E1A)">
+            <div class="hero-mini-content">
+              <div class="hero-mini-tag" style="color:var(--brand-accent)">🏠 Home & Living</div>
+              <div class="hero-mini-title">Transform<br>Your Space</div>
+              <div class="hero-mini-sub">From ₹1,499</div>
+              <button class="btn btn-sm btn-primary" style="margin-top:12px" aria-label="Shop Home">Explore →</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Offers Strip -->
+  <section class="offers-section">
+    <div class="container">
+      <div class="offer-strip">
+        <div class="offer-strip-item reveal">
+          <div class="offer-icon" style="background:rgba(108,99,255,0.15)">🚀</div>
+          <div class="offer-text">
+            <h4>Free Shipping</h4>
+            <p>On all orders over ₹999</p>
+          </div>
+        </div>
+        <div class="offer-strip-item reveal delay-200">
+          <div class="offer-icon" style="background:rgba(67,233,123,0.15)">🔄</div>
+          <div class="offer-text">
+            <h4>Easy Returns</h4>
+            <p>30-day hassle-free returns</p>
+          </div>
+        </div>
+        <div class="offer-strip-item reveal delay-400">
+          <div class="offer-icon" style="background:rgba(255,215,0,0.15)">🔒</div>
+          <div class="offer-text">
+            <h4>Secure Payment</h4>
+            <p>SSL encrypted checkout</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories-section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-badge purple">🏷️ Browse</div>
+          <h2 class="section-title">Shop by Category</h2>
+          <p class="section-subtitle">Explore our wide selection across all categories</p>
+        </div>
+        <a href="products.html" class="btn btn-secondary">View All →</a>
+      </div>
+      <div class="categories-scroll" id="categories-grid"></div>
+    </div>
+  </section>
+
+  <!-- Flash Deals -->
+  <section class="deals-section">
+    <div class="container">
+      <div class="deals-header">
+        <div class="deals-header-left">
+          <div>
+            <div class="section-badge orange">⚡ Limited Time</div>
+            <h2 class="section-title">Flash Deals</h2>
+          </div>
+          <div class="countdown-timer" id="main-countdown"></div>
+        </div>
+        <a href="products.html?sale=true" class="btn btn-secondary">See All Deals →</a>
+      </div>
+      <div class="deals-grid" id="deals-grid"></div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="featured-section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-badge purple">⭐ Handpicked</div>
+          <h2 class="section-title">Featured Products</h2>
+          <p class="section-subtitle">Our most loved items this season</p>
+        </div>
+        <a href="products.html" class="btn btn-secondary">View All →</a>
+      </div>
+      <div class="products-grid" id="featured-grid"></div>
+    </div>
+  </section>
+
+  <!-- Brands Section -->
+  <section class="brands-section">
+    <div class="container">
+      <div class="brands-inner">
+        <p class="text-muted text-sm" style="white-space:nowrap">Trusted Brands:</p>
+        <div class="brand-logo">Apple</div>
+        <div class="brand-logo">Samsung</div>
+        <div class="brand-logo">Nike</div>
+        <div class="brand-logo">Sony</div>
+        <div class="brand-logo">Dyson</div>
+        <div class="brand-logo">LEGO</div>
+        <div class="brand-logo">Dell</div>
+        <div class="brand-logo">Fitbit</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trending Products -->
+  <section class="trending-section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-badge orange">🔥 Hot Right Now</div>
+          <h2 class="section-title">Trending Products</h2>
+          <p class="section-subtitle">What everyone is buying this week</p>
+        </div>
+        <a href="products.html?sort=trending" class="btn btn-secondary">See All →</a>
+      </div>
+      <div class="products-grid" id="trending-grid"></div>
+    </div>
+  </section>
+
+  <!-- Why Shop with Us -->
+  <section class="why-section">
+    <div class="container">
+      <div class="text-center mb-8">
+        <div class="section-badge green" style="display:inline-flex;margin-bottom:16px">💎 Why ShopNova</div>
+        <h2 class="section-title">Why Millions Shop with Us</h2>
+        <p class="section-subtitle" style="margin-top:8px">We're committed to delivering the best shopping experience</p>
+      </div>
+      <div class="why-grid">
+        <div class="why-card reveal">
+          <span class="why-icon animate-bounce" style="animation-delay:0s">🚀</span>
+          <h3 class="why-title">Lightning Fast Delivery</h3>
+          <p class="why-desc">Get your orders delivered in 2-5 business days. Same-day delivery available in select cities.</p>
+        </div>
+        <div class="why-card reveal delay-200">
+          <span class="why-icon" style="display:block;margin-bottom:16px">🔒</span>
+          <h3 class="why-title">100% Secure Shopping</h3>
+          <p class="why-desc">SSL encryption, PCI-compliant payments, and buyer protection on every order.</p>
+        </div>
+        <div class="why-card reveal delay-300">
+          <span class="why-icon" style="display:block;margin-bottom:16px">💰</span>
+          <h3 class="why-title">Best Price Guarantee</h3>
+          <p class="why-desc">Find a lower price anywhere? We'll match it, plus give you an extra 5% off.</p>
+        </div>
+        <div class="why-card reveal delay-400">
+          <span class="why-icon" style="display:block;margin-bottom:16px">🎁</span>
+          <h3 class="why-title">Reward Points</h3>
+          <p class="why-desc">Earn points on every purchase. Redeem for discounts on your next order.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="container">
+    <div class="newsletter-section reveal">
+      <div class="newsletter-bg-orb left"></div>
+      <div class="newsletter-bg-orb right"></div>
+      <div class="newsletter-content">
+        <span class="newsletter-icon">📬</span>
+        <h2 class="newsletter-title">Stay in the <span class="grad-text">Loop</span></h2>
+        <p class="newsletter-subtitle">Subscribe for exclusive deals, new arrivals, and members-only offers</p>
+        <div class="newsletter-form">
+          <input type="email" class="newsletter-input" id="newsletter-email" placeholder="Enter your email address" aria-label="Email for newsletter">
+          <button class="btn btn-primary btn-lg" onclick="subscribeNewsletter()" aria-label="Subscribe">
+            Subscribe 🎉
+          </button>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:16px">No spam. Unsubscribe anytime. By subscribing you agree to our privacy policy.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/features.js"></script>
+  <script>
+    // Inject Navbar & Footer
+    document.getElementById('navbar-container').innerHTML = buildNavbar();
+    document.getElementById('footer-container').innerHTML = buildFooter();
+
+    // Render Categories
+    function renderCategories() {
+      const grid = document.getElementById('categories-grid');
+      if (!grid) return;
+      grid.innerHTML = SHOPNOVA_DATA.categories.map(cat => `
+        <div class="category-card reveal" onclick="window.location.href='products.html?cat=${cat.id}'">
+          <div class="category-icon" style="background:${cat.color}22;color:${cat.color}">${cat.icon}</div>
+          <div class="category-name">${cat.name}</div>
+          <div class="category-count">${cat.count.toLocaleString()} items</div>
+        </div>
+      `).join('');
+    }
+
+    // Render Flash Deals
+    function renderDeals() {
+      const grid = document.getElementById('deals-grid');
+      if (!grid) return;
+      const deals = SHOPNOVA_DATA.dealsOfDay.slice(0, 4);
+      grid.innerHTML = deals.map(deal => {
+        const p = getProduct(deal.productId);
+        if (!p) return '';
+        const pct = Math.round((deal.sold / deal.total) * 100);
+        return `
+          <div class="deal-card reveal" onclick="window.location.href='product-detail.html?id=${p.id}'">
+            <div class="deal-card-img img-zoom-container">
+              <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop'">
+              <div class="deal-badge-big">-${p.discount}%</div>
+            </div>
+            <div class="deal-content">
+              <div class="deal-title">${p.name}</div>
+              <div class="price-display">
+                <span class="price-current">${formatPrice(p.price)}</span>
+                <span class="price-original">${formatPrice(p.originalPrice)}</span>
+              </div>
+              <div class="deal-progress-wrap">
+                <div class="deal-progress-label">
+                  <span>🔥 ${deal.sold} sold</span>
+                  <span>${deal.total - deal.sold} left</span>
+                </div>
+                <div class="deal-progress">
+                  <div class="deal-progress-fill" style="width:${pct}%"></div>
+                </div>
+              </div>
+              <button class="btn btn-cart w-full" style="margin-top:12px" onclick="event.stopPropagation(); Cart.addItem(${p.id})" aria-label="Add to cart">
+                🛒 Add to Cart
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Featured Products
+    function renderFeatured() {
+      const grid = document.getElementById('featured-grid');
+      if (!grid) return;
+      grid.innerHTML = getFeaturedProducts().slice(0, 8).map(p => buildProductCard(p)).join('');
+    }
+
+    // Render Trending
+    function renderTrending() {
+      const grid = document.getElementById('trending-grid');
+      if (!grid) return;
+      grid.innerHTML = getTrendingProducts().slice(0, 8).map(p => buildProductCard(p)).join('');
+    }
+
+    // Render For You (Recommendations)
+    function renderForYou() {
+      if (typeof RecommendationEngine === 'undefined') return;
+      const forYou = RecommendationEngine.getForYou(4);
+      if (!forYou || !forYou.length) return;
+
+      const trendingSec = document.querySelector('.trending-section');
+      if (!trendingSec) return;
+
+      const section = document.createElement('section');
+      section.className = 'for-you-section';
+      section.style.padding = 'var(--space-12) 0';
+      section.innerHTML = `
+        <div class="container">
+          <div class="section-header">
+            <div>
+              <div class="section-badge purple">🎯 Picked For You</div>
+              <h2 class="section-title">Recommended For You</h2>
+              <p class="section-subtitle">Based on your browsing preferences</p>
+            </div>
+            <a href="products.html" class="btn btn-secondary">Explore More →</a>
+          </div>
+          <div class="products-grid">${forYou.map(p => buildProductCard(p)).join('')}</div>
+        </div>
+      `;
+      trendingSec.parentNode.insertBefore(section, trendingSec.nextSibling);
+    }
+
+    // Start countdown
+    const countdownEl = document.getElementById('main-countdown');
+    if (countdownEl) startCountdown(countdownEl, SHOPNOVA_DATA.dealsOfDay[0].endsAt);
+
+    // Newsletter subscribe
+    function subscribeNewsletter() {
+      const email = document.getElementById('newsletter-email').value.trim();
+      if (!email || !email.includes('@')) {
+        Notify.warning('Please enter a valid email', '');
+        return;
+      }
+      document.getElementById('newsletter-email').value = '';
+      Notify.success('Subscribed! 🎉', 'Welcome to ShopNova. Check your inbox for a surprise!');
+    }
+
+    // Init
+    renderCategories();
+    renderDeals();
+    renderFeatured();
+    renderTrending();
+    renderForYou();
+    initApp();
+    if (typeof PushNotifications !== 'undefined') PushNotifications.init();
+  </script>
+</body>
+</html>

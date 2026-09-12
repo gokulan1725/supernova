@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="View and manage your saved items on ShopNova. Save products for later, compare options, and easily add items to your cart.">
+  <title>My Wishlist — ShopNova</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .wishlist-page {
+      padding: var(--space-8) 0 var(--space-16);
+      min-height: calc(100vh - 450px);
+    }
+    
+    .wishlist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-8);
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: var(--space-4);
+    }
+
+    .wishlist-title-area h1 {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: 800;
+      margin-bottom: var(--space-1);
+    }
+
+    .wishlist-count {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+
+    .wishlist-count strong {
+      color: var(--brand-secondary);
+    }
+
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-6);
+    }
+
+    .clear-wishlist-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .clear-wishlist-btn:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #EF4444;
+    }
+
+    .list-tabs {
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .list-tab {
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--glass-border);
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .list-tab:hover { border-color: var(--brand-primary); color: var(--text-primary); }
+    .list-tab.active { background: rgba(108,99,255,0.12); border-color: var(--brand-primary); color: var(--brand-primary); }
+
+    .list-tab-actions {
+      margin-left: auto;
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .share-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-700);
+      border: 1px solid var(--brand-primary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-6);
+      z-index: 9999;
+      display: none;
+      gap: 12px;
+      align-items: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .share-toast input {
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-size: 12px;
+      width: 320px;
+    }
+
+    @media (max-width: 768px) {
+      .list-tab-actions { margin-left: 0; width: 100%; }
+      .share-toast input { width: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="wishlist-page">
+    <div class="container">
+      
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb mb-6" aria-label="Breadcrumb">
+        <span class="breadcrumb-item"><a href="index.html">Home</a></span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-item active">Wishlist</span>
+      </nav>
+
+      <!-- Wishlist Header -->
+      <div class="wishlist-header">
+        <div class="wishlist-title-area">
+          <h1 id="page-title">My Wishlist</h1>
+          <div class="wishlist-count" id="wishlist-count">Loading items...</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="clear-wishlist-btn" id="clear-all-btn" onclick="clearCurrentList()" style="display: none;">
+            🗑️ Clear
+          </button>
+          <button class="btn btn-secondary btn-sm" id="create-list-btn" onclick="showCreateListModal()" style="display:none">
+            + New List
+          </button>
+        </div>
+      </div>
+
+      <!-- List Tabs -->
+      <div class="list-tabs" id="list-tabs" style="display:none">
+        <div id="list-tab-container" style="display:flex;gap:8px;flex-wrap:wrap;flex:1"></div>
+        <div class="list-tab-actions">
+          <button class="btn btn-secondary btn-sm" onclick="shareCurrentList()">📤 Share List</button>
+        </div>
+      </div>
+
+      <!-- Share Toast -->
+      <div class="share-toast" id="share-toast">
+        <span style="font-size:14px;font-weight:600;color:var(--text-primary)">Share this list</span>
+        <input type="text" id="share-link-input" readonly>
+        <button class="btn btn-primary btn-sm" onclick="copyShareLink()">Copy</button>
+        <button class="btn btn-secondary btn-sm" onclick="closeShareToast()">✕</button>
+      </div>
+
+      <!-- Create List Modal -->
+      <div id="create-list-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.6);align-items:center;justify-content:center">
+        <div style="background:var(--bg-700);border:1px solid var(--glass-border);border-radius:var(--radius-xl);padding:var(--space-6);width:90%;max-width:400px">
+          <h3 style="font-weight:700;margin-bottom:var(--space-4)">Create New List</h3>
+          <div class="form-group">
+            <label class="form-label">List Name</label>
+            <input type="text" class="form-control" id="new-list-name" placeholder="e.g., Birthday Gifts">
+          </div>
+          <div style="display:flex;gap:8px;margin-top:var(--space-4)">
+            <button class="btn btn-secondary flex-1" onclick="closeCreateListModal()">Cancel</button>
+            <button class="btn btn-primary flex-1" onclick="confirmCreateList()">Create</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Alerts Section -->
+      <div id="alerts-section" style="margin-top:var(--space-12); display:none">
+        <div class="wishlist-header" style="margin-bottom:var(--space-4)">
+          <div class="wishlist-title-area">
+            <h2 style="font-size:var(--text-xl); font-weight:700">🔔 Active Price & Stock Alerts</h2>
+            <div class="wishlist-count" id="alerts-count">Subscribed alerts</div>
+          </div>
+        </div>
+        <div id="alerts-container" style="display:flex; gap:12px; flex-wrap:wrap"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="wishlist-container"></div>
+
+  <div id="footer-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/features.js"></script>
+  <script>
+    document.getElementById('navbar-container').innerHTML = buildNavbar();
+    document.getElementById('footer-container').innerHTML = buildFooter();
+
+    let currentListId = WishlistShare.DEFAULT_LIST;
+
+    function getCurrentListId() {
+      const shared = WishlistShare.getListIdFromHash();
+      if (shared && WishlistShare.getAll()[shared]) {
+        return shared;
+      }
+      return currentListId;
+    }
+
+    function renderListTabs() {
+      const lists = WishlistShare.getAll();
+      const container = document.getElementById('list-tab-container');
+      const tabsSection = document.getElementById('list-tabs');
+      const createBtn = document.getElementById('create-list-btn');
+      const pageTitle = document.getElementById('page-title');
+
+      if (Object.keys(lists).length <= 1 && !WishlistShare.isSharedMode()) {
+        tabsSection.style.display = 'none';
+        createBtn.style.display = 'none';
+      } else {
+        tabsSection.style.display = 'flex';
+        if (!WishlistShare.isSharedMode()) {
+          createBtn.style.display = 'inline-flex';
+        }
+      }
+
+      const activeId = getCurrentListId();
+      currentListId = activeId;
+      const activeList = lists[activeId] || lists[WishlistShare.DEFAULT_LIST];
+      pageTitle.textContent = WishlistShare.isSharedMode() ? 'Shared Wishlist' : (activeList.name || 'My Wishlist');
+
+      container.innerHTML = Object.keys(lists).map(id => {
+        const list = lists[id];
+        const isActive = id === activeId;
+        const isDefault = id === WishlistShare.DEFAULT_LIST;
+        return `
+          <button class="list-tab ${isActive ? 'active' : ''}" onclick="switchList('${id}')">
+            ${list.name || 'My Wishlist'}
+            ${!isDefault && !WishlistShare.isSharedMode() ? `<span onclick="event.stopPropagation(); deleteListConfirm('${id}')" style="margin-left:6px;opacity:0.6;cursor:pointer" title="Delete list">✕</span>` : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function switchList(listId) {
+      currentListId = listId;
+      renderListTabs();
+      renderWishlist();
+    }
+
+    function renderWishlist() {
+      const container = document.getElementById('wishlist-container');
+      const countEl = document.getElementById('wishlist-count');
+      const clearBtn = document.getElementById('clear-all-btn');
+
+      renderListTabs();
+
+      const listId = getCurrentListId();
+      const list = WishlistShare.getList(listId);
+      const ids = list.items || [];
+
+      if (WishlistShare.isSharedMode()) {
+        clearBtn.style.display = 'none';
+        document.getElementById('create-list-btn').style.display = 'none';
+      }
+
+      if (ids.length === 0) {
+        countEl.innerHTML = WishlistShare.isSharedMode() ? 'This list is empty' : 'No items saved';
+        clearBtn.style.display = 'none';
+        container.innerHTML = `
+          <div class="empty-state" style="padding: var(--space-12) var(--space-6); text-align: center; background: var(--bg-700); border: 1px solid var(--glass-border); border-radius: var(--radius-xl); max-width: 500px; margin: var(--space-8) auto; box-shadow: var(--shadow-lg);">
+            <div class="empty-icon" style="font-size: 4rem; margin-bottom: var(--space-4); animation: pulse 2s infinite;">❤️</div>
+            <h3 class="text-2xl font-bold mb-2">${WishlistShare.isSharedMode() ? 'This List is Empty' : 'Your List is Empty'}</h3>
+            <p class="text-secondary mb-6">${WishlistShare.isSharedMode() ? 'This shared list has no items yet.' : 'Save products you love by tapping the heart icon on any product.'}</p>
+            ${!WishlistShare.isSharedMode() ? `<a href="products.html" class="btn btn-primary">Discover Products</a>` : ''}
+          </div>
+        `;
+      } else {
+        countEl.innerHTML = `<strong>${ids.length}</strong> ${ids.length === 1 ? 'item' : 'items'} in ${list.name || 'My Wishlist'}`;
+        clearBtn.style.display = 'block';
+
+        const wishlistProducts = SHOPNOVA_DATA.products.filter(p => ids.includes(p.id));
+        container.className = 'wishlist-grid';
+        container.innerHTML = wishlistProducts.map(p => buildProductCard(p)).join('');
+      }
+
+      renderAlerts();
+      initScrollReveal();
+    }
+
+    function renderAlerts() {
+      if (typeof PriceAlerts === 'undefined') return;
+      const alerts = PriceAlerts.getAlerts();
+      const sec = document.getElementById('alerts-section');
+      const container = document.getElementById('alerts-container');
+      const countEl = document.getElementById('alerts-count');
+
+      if (!alerts || !alerts.length) {
+        if (sec) sec.style.display = 'none';
+        return;
+      }
+
+      sec.style.display = 'block';
+      countEl.textContent = `${alerts.length} active notification ${alerts.length === 1 ? 'subscription' : 'subscriptions'}`;
+
+      container.innerHTML = alerts.map(a => {
+        const product = getProduct(a.productId);
+        if (!product) return '';
+        const isPrice = a.type === 'price';
+        return `
+          <div style="background:var(--bg-700); border:1px solid var(--glass-border); border-radius:var(--radius-lg); padding:12px 16px; display:flex; align-items:center; gap:12px; min-width:280px">
+            <span style="font-size:24px">${isPrice ? '💰' : '📦'}</span>
+            <div style="flex:1">
+              <div style="font-size:13px; font-weight:700">${product.name.substring(0, 30)}...</div>
+              <div style="font-size:11px; color:var(--text-muted)">
+                ${isPrice ? `Target: ${formatPrice(a.targetPrice)} (Current: ${formatPrice(product.price)})` : 'Back in stock alert'}
+              </div>
+            </div>
+            <button onclick="PriceAlerts.removeAlert(${product.id}, '${a.type}'); renderWishlist();" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:16px">✕</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function clearCurrentList() {
+      if (!confirm('Are you sure you want to clear this list?')) return;
+      WishlistShare.removeItem(currentListId, WishlistShare.getList(currentListId).items);
+      renderWishlist();
+      Notify.info('List cleared', 'All items have been removed.');
+    }
+
+    function showCreateListModal() {
+      document.getElementById('create-list-modal').style.display = 'flex';
+      document.getElementById('new-list-name').value = '';
+      document.getElementById('new-list-name').focus();
+    }
+
+    function closeCreateListModal() {
+      document.getElementById('create-list-modal').style.display = 'none';
+    }
+
+    function confirmCreateList() {
+      const name = document.getElementById('new-list-name').value.trim();
+      if (!name) { Notify.warning('Name required', 'Please enter a list name.'); return; }
+      const newId = WishlistShare.createList(name);
+      closeCreateListModal();
+      switchList(newId);
+      Notify.success('List created!', `"${name}" is ready.`);
+    }
+
+    function deleteListConfirm(listId) {
+      if (!confirm('Delete this list? This cannot be undone.')) return;
+      WishlistShare.deleteList(listId);
+      if (currentListId === listId) currentListId = WishlistShare.DEFAULT_LIST;
+      renderWishlist();
+      Notify.info('List deleted', '');
+    }
+
+    function shareCurrentList() {
+      const listId = getCurrentListId();
+      const link = WishlistShare.getShareLink(listId);
+      const toast = document.getElementById('share-toast');
+      const input = document.getElementById('share-link-input');
+      input.value = link;
+      toast.style.display = 'flex';
+    }
+
+    function copyShareLink() {
+      const input = document.getElementById('share-link-input');
+      input.select();
+      navigator.clipboard.writeText(input.value).then(() => {
+        Notify.success('Link copied!', 'Share this link with friends and family.');
+        closeShareToast();
+      }).catch(() => {
+        Notify.warning('Copy failed', 'Please copy the link manually.');
+      });
+    }
+
+    function closeShareToast() {
+      document.getElementById('share-toast').style.display = 'none';
+    }
+
+    // React to changes
+    document.addEventListener('listsUpdated', renderWishlist);
+    document.addEventListener('wishlistUpdated', renderWishlist);
+    document.addEventListener('cartUpdated', renderWishlist);
+
+    // Handle hash changes for shared lists
+    window.addEventListener('hashchange', () => {
+      const newId = getCurrentListId();
+      if (newId !== currentListId) {
+        currentListId = newId;
+        renderWishlist();
+      }
+    });
+
+    // Initial render
+    renderWishlist();
+    initApp();
+  </script>
+</body>
+</html>

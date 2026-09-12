@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Browse all products on ShopNova. Filter by category, price, brand, and rating. Find the best deals on electronics, fashion, home, and more.">
+  <title>Products — ShopNova</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .products-page { padding: var(--space-8) 0 var(--space-16); }
+
+    .products-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: var(--space-6);
+      align-items: start;
+    }
+
+    /* Toolbar */
+    .products-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) var(--space-5);
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      margin-bottom: var(--space-5);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .products-count {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+
+    .products-count strong { color: var(--text-primary); }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .sort-select {
+      padding: var(--space-2) var(--space-4);
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: var(--text-sm);
+      cursor: pointer;
+      min-width: 160px;
+    }
+
+    .sort-select:focus { outline: none; border-color: var(--brand-primary); }
+
+    .view-toggle {
+      display: flex;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .view-btn {
+      padding: var(--space-2) var(--space-3);
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 18px;
+      transition: all var(--transition-fast);
+    }
+
+    .view-btn.active {
+      background: var(--brand-primary);
+      color: white;
+    }
+
+    /* Active Filter Tags */
+    .active-filters {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-4);
+    }
+
+    .filter-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-1) var(--space-3);
+      background: rgba(108, 99, 255, 0.15);
+      border: 1px solid rgba(108, 99, 255, 0.3);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      color: var(--brand-primary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .filter-tag:hover { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #EF4444; }
+
+    .filter-tag-close { font-size: 14px; }
+
+    /* Price Range Display */
+    .price-range-display {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      margin-top: var(--space-2);
+    }
+
+    /* Color Options in Filter */
+    .filter-colors {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .filter-color-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-full);
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .filter-color-btn:hover,
+    .filter-color-btn.selected {
+      border-color: white;
+      transform: scale(1.15);
+    }
+
+    /* Mobile Filter Toggle */
+    .filter-toggle-mobile {
+      display: none;
+      width: 100%;
+      margin-bottom: var(--space-4);
+    }
+
+    /* No Results */
+    .no-results {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 1024px) {
+      .products-layout { grid-template-columns: 1fr; }
+      .filter-sidebar { position: static; max-height: none; display: none; }
+      .filter-sidebar.mobile-open { display: block; }
+      .filter-toggle-mobile { display: flex; }
+    }
+
+    @media (max-width: 768px) {
+      .products-toolbar { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="products-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb mb-6" aria-label="Breadcrumb">
+        <span class="breadcrumb-item"><a href="index.html">Home</a></span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-item active" id="bc-label">All Products</span>
+      </nav>
+
+      <!-- Mobile Filter Toggle -->
+      <button class="btn btn-secondary filter-toggle-mobile" id="filter-toggle" onclick="toggleMobileFilters()" aria-label="Toggle Filters">
+        🎛️ Filters &amp; Sort
+      </button>
+
+      <!-- Active Filters -->
+      <div class="active-filters" id="active-filters"></div>
+
+      <div class="products-layout">
+
+        <!-- Sidebar Filters -->
+        <aside class="filter-sidebar" id="filter-sidebar" aria-label="Product Filters">
+
+          <!-- Filter Header -->
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="font-bold text-lg">Filters</h2>
+            <button class="btn btn-ghost btn-sm" onclick="clearAllFilters()" id="clear-filters-btn" aria-label="Clear all filters">Clear All</button>
+          </div>
+
+          <!-- Category Filter -->
+          <div class="filter-section">
+            <div class="filter-title">Category</div>
+            <div class="filter-options" id="category-filter"></div>
+          </div>
+
+          <!-- Price Filter -->
+          <div class="filter-section">
+            <div class="filter-title">Price Range</div>
+            <input type="range" id="price-max" min="0" max="250000" value="250000" step="5000"
+              oninput="filterProducts()" aria-label="Maximum price">
+            <div class="price-range-display">
+              <span>₹0</span>
+              <span id="price-max-label"><strong>₹2,50,000</strong></span>
+            </div>
+          </div>
+
+          <!-- Rating Filter -->
+          <div class="filter-section">
+            <div class="filter-title">Minimum Rating</div>
+            <div class="filter-options">
+              <label class="form-check">
+                <input type="radio" name="min-rating" value="0" checked onchange="filterProducts()"> All Ratings
+              </label>
+              <label class="form-check">
+                <input type="radio" name="min-rating" value="4.5" onchange="filterProducts()">
+                ⭐⭐⭐⭐⭐ 4.5+
+              </label>
+              <label class="form-check">
+                <input type="radio" name="min-rating" value="4.0" onchange="filterProducts()">
+                ⭐⭐⭐⭐ 4.0+
+              </label>
+              <label class="form-check">
+                <input type="radio" name="min-rating" value="3.5" onchange="filterProducts()">
+                ⭐⭐⭐½ 3.5+
+              </label>
+            </div>
+          </div>
+
+          <!-- Brand Filter -->
+          <div class="filter-section">
+            <div class="filter-title">Brand</div>
+            <div class="filter-options" id="brand-filter"></div>
+          </div>
+
+          <!-- Free Shipping -->
+          <div class="filter-section">
+            <div class="filter-title">Delivery</div>
+            <div class="filter-options">
+              <label class="form-check">
+                <input type="checkbox" id="filter-free-ship" onchange="filterProducts()"> Free Shipping
+              </label>
+              <label class="form-check">
+                <input type="checkbox" id="filter-in-stock" onchange="filterProducts()"> In Stock Only
+              </label>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- Product Area -->
+        <div>
+          <!-- Toolbar -->
+          <div class="products-toolbar">
+            <div class="toolbar-left">
+              <p class="products-count" id="products-count">Showing <strong>0</strong> products</p>
+            </div>
+            <div class="toolbar-right">
+              <select class="sort-select" id="sort-select" onchange="filterProducts()" aria-label="Sort products">
+                <option value="featured">Featured</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="rating">Highest Rated</option>
+                <option value="discount">Biggest Discount</option>
+                <option value="newest">Newest First</option>
+              </select>
+              <div class="view-toggle">
+                <button class="view-btn active" id="grid-view-btn" onclick="setView('grid')" title="Grid View" aria-label="Grid view">⊞</button>
+                <button class="view-btn" id="list-view-btn" onclick="setView('list')" title="List View" aria-label="List view">☰</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Products Grid -->
+          <div id="products-container" class="products-grid"></div>
+
+          <!-- Pagination -->
+          <div class="pagination mt-8" id="pagination"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('navbar-container').innerHTML = buildNavbar();
+    document.getElementById('footer-container').innerHTML = buildFooter();
+
+    // State
+    let currentView = 'grid';
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 12;
+    let filteredProducts = [...SHOPNOVA_DATA.products];
+
+    // Parse URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramCat = urlParams.get('cat');
+    const paramQ = urlParams.get('q');
+    const paramSale = urlParams.get('sale');
+    const paramSort = urlParams.get('sort');
+
+    // Update breadcrumb
+    if (paramCat) {
+      const cat = SHOPNOVA_DATA.categories.find(c => c.id === paramCat);
+      if (cat) document.getElementById('bc-label').textContent = cat.name;
+    } else if (paramQ) {
+      document.getElementById('bc-label').textContent = `Search: "${paramQ}"`;
+    } else if (paramSale) {
+      document.getElementById('bc-label').textContent = 'Sale & Deals';
+    }
+
+    // Set initial sort
+    if (paramSort === 'trending') {
+      document.getElementById('sort-select').value = 'rating';
+    }
+
+    // Build category filter
+    function buildCategoryFilter() {
+      const all = [{ id: 'all', name: 'All Products', count: SHOPNOVA_DATA.products.length }];
+      const cats = [...all, ...SHOPNOVA_DATA.categories];
+      const container = document.getElementById('category-filter');
+      container.innerHTML = cats.map(cat => `
+        <label class="form-check">
+          <input type="radio" name="cat-filter" value="${cat.id}"
+            ${(cat.id === (paramCat || 'all')) ? 'checked' : ''}
+            onchange="filterProducts()">
+          ${cat.icon || '🏷️'} ${cat.name}
+          <span class="text-muted text-xs">(${cat.count || SHOPNOVA_DATA.products.filter(p => p.category === cat.id).length})</span>
+        </label>
+      `).join('');
+    }
+
+    // Build brand filter
+    function buildBrandFilter() {
+      const brands = [...new Set(SHOPNOVA_DATA.products.map(p => p.brand))].sort();
+      document.getElementById('brand-filter').innerHTML = brands.map(b => `
+        <label class="form-check">
+          <input type="checkbox" class="brand-filter-cb" value="${b}" onchange="filterProducts()">
+          ${b}
+        </label>
+      `).join('');
+    }
+
+    // Main filter logic
+    function filterProducts() {
+      const cat = document.querySelector('input[name="cat-filter"]:checked')?.value || 'all';
+      const maxPrice = Number(document.getElementById('price-max').value);
+      const minRating = Number(document.querySelector('input[name="min-rating"]:checked')?.value || 0);
+      const selectedBrands = [...document.querySelectorAll('.brand-filter-cb:checked')].map(el => el.value);
+      const freeShip = document.getElementById('filter-free-ship').checked;
+      const inStock = document.getElementById('filter-in-stock').checked;
+      const sortVal = document.getElementById('sort-select').value;
+
+      // Update price label
+      document.getElementById('price-max-label').innerHTML = `<strong>${formatPrice(maxPrice)}</strong>`;
+
+      // Filter
+      let products = SHOPNOVA_DATA.products.filter(p => {
+        if (cat !== 'all' && p.category !== cat) return false;
+        if (p.price > maxPrice) return false;
+        if (p.rating < minRating) return false;
+        if (selectedBrands.length > 0 && !selectedBrands.includes(p.brand)) return false;
+        if (freeShip && !p.freeShipping) return false;
+        if (inStock && p.stock === 0) return false;
+        if (paramQ && !searchProducts(paramQ).find(sp => sp.id === p.id)) return false;
+        if (paramSale && p.discount === 0) return false;
+        return true;
+      });
+
+      // Sort
+      products = [...products].sort((a, b) => {
+        switch (sortVal) {
+          case 'price-low': return a.price - b.price;
+          case 'price-high': return b.price - a.price;
+          case 'rating': return b.rating - a.rating;
+          case 'discount': return b.discount - a.discount;
+          case 'newest': return (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0);
+          default: return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+        }
+      });
+
+      filteredProducts = products;
+      currentPage = 1;
+      renderProducts();
+      updateActiveFilters(cat, maxPrice, minRating, selectedBrands, freeShip, inStock);
+    }
+
+    function renderProducts() {
+      const container = document.getElementById('products-container');
+      const start = (currentPage - 1) * ITEMS_PER_PAGE;
+      const page = filteredProducts.slice(start, start + ITEMS_PER_PAGE);
+
+      document.getElementById('products-count').innerHTML =
+        `Showing <strong>${filteredProducts.length}</strong> products`;
+
+      if (!page.length) {
+        container.innerHTML = `
+          <div class="no-results">
+            <div class="empty-state">
+              <div class="empty-icon">🔍</div>
+              <h3>No Products Found</h3>
+              <p>Try adjusting your filters or search terms to find what you're looking for.</p>
+              <button class="btn btn-primary" onclick="clearAllFilters()">Clear All Filters</button>
+            </div>
+          </div>
+        `;
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+
+      if (currentView === 'grid') {
+        container.className = 'products-grid';
+        container.innerHTML = page.map(p => buildProductCard(p)).join('');
+      } else {
+        container.className = 'products-list';
+        container.innerHTML = page.map(p => buildListItem(p)).join('');
+      }
+
+      renderPagination();
+      initScrollReveal();
+    }
+
+    function buildListItem(p) {
+      return `
+        <div class="product-list-item" onclick="window.location.href='product-detail.html?id=${p.id}'">
+          <div class="product-list-img img-zoom-container">
+            <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop'">
+          </div>
+          <div class="product-list-content">
+            <div class="product-category">${p.brand} • ${p.subcategory || p.category}</div>
+            <div class="product-list-title">${p.name}</div>
+            <div class="product-rating">${renderStars(p.rating)} <span class="rating-count">(${p.reviewCount.toLocaleString()})</span></div>
+            <div class="product-list-desc">${p.description}</div>
+            <div class="product-list-meta">
+              ${p.freeShipping ? '<span>✅ Free Shipping</span>' : ''}
+              <span>📦 Delivery in ${p.deliveryDays} days</span>
+              ${p.stock <= 10 && p.stock > 0 ? `<span style="color:var(--brand-orange)">⚠️ Only ${p.stock} left</span>` : ''}
+            </div>
+            <div class="product-list-actions">
+              <div class="price-display">
+                <span class="price-current" style="font-size:1.3rem">${formatPrice(p.price)}</span>
+                ${p.originalPrice > p.price ? `<span class="price-original">${formatPrice(p.originalPrice)}</span>` : ''}
+                ${p.discount > 0 ? `<span class="price-discount">-${p.discount}%</span>` : ''}
+              </div>
+              <button class="btn btn-cart" onclick="event.stopPropagation(); Cart.addItem(${p.id})" aria-label="Add to cart">🛒 Add to Cart</button>
+              <button class="btn btn-secondary" onclick="event.stopPropagation(); toggleWishlist(${p.id}, this)"
+                style="padding: 10px 16px" aria-label="Toggle wishlist">
+                ${Wishlist.isInWishlist(p.id) ? '❤️' : '🤍'}
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPagination() {
+      const total = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+      const pag = document.getElementById('pagination');
+      if (total <= 1) { pag.innerHTML = ''; return; }
+
+      let html = `<button class="page-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} aria-label="Previous page">‹</button>`;
+
+      for (let i = 1; i <= total; i++) {
+        if (i === 1 || i === total || Math.abs(i - currentPage) <= 2) {
+          html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})" aria-label="Page ${i}">${i}</button>`;
+        } else if (Math.abs(i - currentPage) === 3) {
+          html += `<span class="page-btn" style="cursor:default">…</span>`;
+        }
+      }
+
+      html += `<button class="page-btn" onclick="changePage(${currentPage + 1})" ${currentPage === total ? 'disabled' : ''} aria-label="Next page">›</button>`;
+      pag.innerHTML = html;
+    }
+
+    function changePage(n) {
+      const total = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+      if (n < 1 || n > total) return;
+      currentPage = n;
+      renderProducts();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setView(v) {
+      currentView = v;
+      document.getElementById('grid-view-btn').classList.toggle('active', v === 'grid');
+      document.getElementById('list-view-btn').classList.toggle('active', v === 'list');
+      renderProducts();
+    }
+
+    function updateActiveFilters(cat, maxPrice, minRating, brands, freeShip, inStock) {
+      const container = document.getElementById('active-filters');
+      const tags = [];
+
+      if (cat !== 'all') tags.push({ label: `Category: ${SHOPNOVA_DATA.categories.find(c => c.id === cat)?.name || cat}`, action: () => { document.querySelector('input[name="cat-filter"][value="all"]').checked = true; filterProducts(); } });
+      if (maxPrice < 250000) tags.push({ label: `Max Price: ${formatPrice(maxPrice)}`, action: () => { document.getElementById('price-max').value = 250000; filterProducts(); } });
+      if (minRating > 0) tags.push({ label: `Rating: ${minRating}+⭐`, action: () => { document.querySelector('input[name="min-rating"][value="0"]').checked = true; filterProducts(); } });
+      brands.forEach(b => tags.push({ label: `Brand: ${b}`, action: () => { document.querySelector(`.brand-filter-cb[value="${b}"]`).checked = false; filterProducts(); } }));
+      if (freeShip) tags.push({ label: 'Free Shipping', action: () => { document.getElementById('filter-free-ship').checked = false; filterProducts(); } });
+      if (inStock) tags.push({ label: 'In Stock', action: () => { document.getElementById('filter-in-stock').checked = false; filterProducts(); } });
+      if (paramQ) tags.push({ label: `Search: "${paramQ}"`, action: () => { window.location.href = 'products.html'; } });
+
+      container.innerHTML = tags.map((t, i) =>
+        `<span class="filter-tag" onclick="(${t.action.toString()})()">${t.label} <span class="filter-tag-close">✕</span></span>`
+      ).join('');
+    }
+
+    function clearAllFilters() {
+      document.querySelector('input[name="cat-filter"][value="all"]').checked = true;
+      document.getElementById('price-max').value = 2000;
+      document.querySelector('input[name="min-rating"][value="0"]').checked = true;
+      document.querySelectorAll('.brand-filter-cb').forEach(cb => cb.checked = false);
+      document.getElementById('filter-free-ship').checked = false;
+      document.getElementById('filter-in-stock').checked = false;
+      filterProducts();
+    }
+
+    function toggleMobileFilters() {
+      document.getElementById('filter-sidebar').classList.toggle('mobile-open');
+    }
+
+    // Init
+    buildCategoryFilter();
+    buildBrandFilter();
+
+    // Apply URL params
+    if (paramCat) {
+      const radio = document.querySelector(`input[name="cat-filter"][value="${paramCat}"]`);
+      if (radio) radio.checked = true;
+    }
+
+    filterProducts();
+    initApp();
+  </script>
+</body>
+</html>

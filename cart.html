@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Your ShopNova shopping cart. Review items, update quantities, and proceed to checkout.">
+  <title>Cart — ShopNova</title>
+  <link rel="stylesheet" href="css/main.css">run it
+
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .cart-page {
+      padding: var(--space-8) 0 var(--space-16);
+    }
+
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: var(--space-6);
+      align-items: start;
+    }
+
+    /* Cart Items Section */
+    .cart-items-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-5) var(--space-6);
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      border-bottom: none;
+    }
+
+    .cart-items-body {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+      border-top: none;
+      padding: var(--space-4);
+    }
+
+    /* Order Summary */
+    .order-summary {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      position: sticky;
+      top: 80px;
+    }
+
+    .summary-title {
+      font-size: var(--text-xl);
+      font-weight: 700;
+      margin-bottom: var(--space-6);
+      padding-bottom: var(--space-4);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-3) 0;
+      font-size: var(--text-sm);
+    }
+
+    .summary-line-label {
+      color: var(--text-secondary);
+    }
+
+    .summary-line-value {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .summary-line.free .summary-line-value {
+      color: var(--brand-accent);
+    }
+
+    .summary-line.saving .summary-line-value {
+      color: var(--brand-accent);
+    }
+
+    .summary-divider {
+      border: none;
+      border-top: 1px solid var(--glass-border);
+      margin: var(--space-3) 0;
+    }
+
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-4) 0 var(--space-5);
+      border-top: 2px solid var(--glass-border);
+    }
+
+    .total-label {
+      font-size: var(--text-lg);
+      font-weight: 700;
+    }
+
+    .total-value {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 900;
+      background: var(--grad-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Coupon */
+    .coupon-section {
+      margin: var(--space-5) 0;
+      padding: var(--space-5);
+      background: var(--bg-600);
+      border: 1px dashed var(--glass-border);
+      border-radius: var(--radius-lg);
+    }
+
+    .coupon-input-wrap {
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+
+    .coupon-input {
+      flex: 1;
+      padding: var(--space-3) var(--space-4);
+      background: var(--bg-500);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: var(--text-sm);
+    }
+
+    .coupon-input:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+    }
+
+    /* Security Badges */
+    .security-badges {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-4);
+      padding: var(--space-4) 0 0;
+      flex-wrap: wrap;
+    }
+
+    .security-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Related / Recommended */
+    .cart-recommendations {
+      margin-top: var(--space-8);
+      padding-top: var(--space-8);
+      border-top: 1px solid var(--glass-border);
+    }
+
+    @media (max-width: 1024px) {
+      .cart-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .order-summary {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .cart-items-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="cart-page">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb mb-6" aria-label="Breadcrumb">
+        <span class="breadcrumb-item"><a href="index.html">Home</a></span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-item active">Shopping Cart</span>
+      </nav>
+
+      <h1 class="font-display font-bold mb-8" style="font-size:1.8rem">
+        🛒 Shopping Cart <span class="text-muted text-lg" id="cart-count-heading">( 0 items)</span>
+      </h1>
+
+      <div id="cart-main">
+        <!-- Injected by JS -->
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/features.js"></script>
+  <script>
+    document.getElementById('navbar-container').innerHTML = buildNavbar();
+    document.getElementById('footer-container').innerHTML = buildFooter();
+
+    // Uses global Coupon manager from js/app.js
+
+    function renderCart() {
+      const items = Cart.getItems();
+      const main = document.getElementById('cart-main');
+      document.getElementById('cart-count-heading').textContent = `(${Cart.getCount()} item${Cart.getCount() !== 1 ? 's' : ''})`;
+
+      if (!items.length) {
+        main.innerHTML = `
+          <div class="empty-state" style="background:var(--bg-700);border:1px solid var(--glass-border);border-radius:var(--radius-xl);padding:80px 40px">
+            <div class="empty-icon">🛒</div>
+            <h3>Your Cart is Empty</h3>
+            <p>Looks like you haven't added anything to your cart yet.</p>
+            <a href="products.html" class="btn btn-primary btn-lg" style="margin-top:8px">Start Shopping</a>
+          </div>
+
+          <!-- Recommendations -->
+          <div class="cart-recommendations">
+            <div class="section-badge purple" style="display:inline-flex;margin-bottom:12px">🔥 Popular Items</div>
+            <h2 class="section-title mb-6">You Might Like</h2>
+            <div class="products-grid">
+              ${getFeaturedProducts().slice(0, 4).map(p => buildProductCard(p)).join('')}
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const sub = Cart.getSubtotal();
+      const coupon = Coupon.getApplied();
+      const actualShip = Cart.getShipping(sub);
+      const couponCalc = Coupon.calculateDiscount(sub, actualShip);
+      const couponDiscount = couponCalc.discount;
+      const ship = couponCalc.newShipping;
+
+      const discountedSub = sub - couponDiscount;
+      const tax = Cart.getTax(discountedSub);
+      const total = discountedSub + ship + tax;
+
+      const totalSaved = items.reduce((s, item) => {
+        const p = getProduct(item.productId);
+        if (p && p.originalPrice > p.price) return s + (p.originalPrice - p.price) * item.quantity;
+        return s;
+      }, 0) + couponDiscount;
+
+      main.innerHTML = `
+        <div class="cart-layout">
+
+          <!-- Cart Items -->
+          <div>
+            <div class="cart-items-header">
+              <h2 class="font-bold">${items.length} Item${items.length !== 1 ? 's' : ''} in Cart</h2>
+              <div style="display:flex; gap:8px">
+                <button class="btn btn-secondary btn-sm" onclick="CartSync.saveToCloud()" aria-label="Sync cart">☁️ Save to Account</button>
+                <button class="btn btn-danger btn-sm" onclick="clearCart()" aria-label="Clear cart">🗑️ Clear Cart</button>
+              </div>
+            </div>
+            <div class="cart-items-body">
+              <div id="cart-items-list">
+                ${items.map(item => renderCartItem(item)).join('')}
+              </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="cart-recommendations">
+              <h3 class="font-bold mb-4">Frequently Bought Together</h3>
+              <div class="products-grid">
+                ${getTrendingProducts().filter(p => !Cart.isInCart(p.id)).slice(0, 4).map(p => buildProductCard(p)).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="order-summary animate-fadeInRight">
+            <div class="summary-title">Order Summary</div>
+
+            <div class="summary-line">
+              <span class="summary-line-label">Subtotal (${Cart.getCount()} items)</span>
+              <span class="summary-line-value">${formatPrice(sub)}</span>
+            </div>
+
+            ${coupon ? `
+            <div class="summary-line saving">
+              <span class="summary-line-label">Coupon (${coupon.code})</span>
+              <span class="summary-line-value">-${formatPrice(couponDiscount)}</span>
+            </div>` : ''}
+
+            <div class="summary-line ${ship === 0 ? 'free' : ''}">
+              <span class="summary-line-label">Shipping</span>
+              <span class="summary-line-value">${ship === 0 ? '✅ FREE' : formatPrice(ship)}</span>
+            </div>
+
+            ${ship > 0 ? `
+            <div style="font-size:11px;color:var(--text-muted);margin-top:-8px;margin-bottom:8px">
+              Add ${formatPrice(999 - discountedSub)} more for free shipping
+            </div>` : ''}
+
+            <div class="summary-line">
+              <span class="summary-line-label">Estimated Tax</span>
+              <span class="summary-line-value">${formatPrice(tax)}</span>
+            </div>
+
+            ${totalSaved > 0 ? `
+            <div class="summary-line saving">
+              <span class="summary-line-label">💰 Total Savings</span>
+              <span class="summary-line-value">-${formatPrice(totalSaved)}</span>
+            </div>` : ''}
+
+            <div class="summary-total">
+              <span class="total-label">Total</span>
+              <span class="total-value">${formatPrice(total)}</span>
+            </div>
+
+            <a href="checkout.html" class="btn btn-primary btn-lg w-full" style="margin-bottom:12px" aria-label="Proceed to checkout">
+              Proceed to Checkout →
+            </a>
+            <a href="products.html" class="btn btn-secondary w-full" aria-label="Continue shopping">
+              ← Continue Shopping
+            </a>
+
+            <!-- Coupon -->
+            <div class="coupon-section">
+              <div class="font-semibold text-sm" style="margin-bottom:4px">🎁 Have a Coupon?</div>
+              <div class="text-xs text-muted">Try: SUMMER50, WELCOME10, FREESHIP</div>
+              <div class="coupon-input-wrap">
+                <input type="text" class="coupon-input" id="coupon-code" placeholder="Enter coupon code" aria-label="Coupon code" value="${coupon ? coupon.code : ''}">
+                <button class="btn btn-outline btn-sm" onclick="applyCoupon()" aria-label="Apply coupon">Apply</button>
+              </div>
+              ${coupon ? `
+              <div style="margin-top:8px;font-size:12px;color:var(--brand-accent)">
+                ✅ Coupon "${coupon.code}" applied! (${coupon.label})
+                <button onclick="removeCoupon()" style="color:var(--brand-secondary);margin-left:8px;cursor:pointer;background:none;border:none;font-size:12px" aria-label="Remove coupon">Remove</button>
+              </div>` : ''}
+            </div>
+
+            <!-- Security -->
+            <div class="security-badges">
+              <div class="security-badge">🔒 Secure</div>
+              <div class="security-badge">📜 SSL Protected</div>
+              <div class="security-badge">🛡️ Buyer Protection</div>
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    function renderCartItem(item) {
+      const product = getProduct(item.productId);
+      const itemTotal = item.price * item.quantity;
+      const attrs = Object.entries(item.options || {}).map(([k, v]) => {
+        const display = k === 'color' ? `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${v};border:1px solid rgba(255,255,255,0.3)"></span>` : v;
+        return `<span class="cart-item-attr">${k}: ${display}</span>`;
+      }).join('');
+
+      return `
+        <div class="cart-item animate-fadeIn" id="cart-item-${item.key}">
+          <div class="cart-item-img" style="cursor:pointer" onclick="window.location.href='product-detail.html?id=${item.productId}'">
+            <img src="${item.image}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop'">
+          </div>
+          <div class="cart-item-details">
+            <div class="cart-item-name" style="cursor:pointer" onclick="window.location.href='product-detail.html?id=${item.productId}'">${item.name}</div>
+            <div class="cart-item-attrs">${attrs || '<span class="cart-item-attr">Standard</span>'}</div>
+            ${product?.freeShipping ? `<div class="text-xs" style="color:var(--brand-accent);margin-bottom:8px">✅ Free Shipping</div>` : ''}
+            <div class="cart-item-actions">
+              <div class="qty-selector">
+                <button class="qty-btn" onclick="updateItemQty('${item.key}', ${item.quantity - 1})" aria-label="Decrease">−</button>
+                <span class="qty-value">${item.quantity}</span>
+                <button class="qty-btn" onclick="updateItemQty('${item.key}', ${item.quantity + 1})" aria-label="Increase">+</button>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="moveToWishlist('${item.key}', ${item.productId})" aria-label="Save for later">💾 Save for later</button>
+              <button class="btn btn-danger btn-sm" onclick="removeItem('${item.key}')" aria-label="Remove item">🗑️ Remove</button>
+            </div>
+          </div>
+          <div class="cart-item-price">${formatPrice(itemTotal)}</div>
+        </div>
+      `;
+    }
+
+    function updateItemQty(key, qty) {
+      Cart.updateQuantity(key, qty);
+      renderCart();
+    }
+
+    function removeItem(key) {
+      Cart.removeItem(key);
+      renderCart();
+    }
+
+    function clearCart() {
+      if (confirm('Clear all items from cart?')) {
+        Cart.clear();
+        Notify.info('Cart cleared', '');
+        renderCart();
+      }
+    }
+
+    function moveToWishlist(key, productId) {
+      Wishlist.toggle(productId);
+      Cart.removeItem(key);
+      renderCart();
+    }
+
+    function applyCoupon() {
+      const code = document.getElementById('coupon-code')?.value?.trim();
+      if (!code) return;
+      const res = Coupon.apply(code);
+      if (res.success) {
+        Notify.success('Coupon applied! 🎉', res.coupon.label);
+        renderCart();
+      } else {
+        Notify.error('Invalid coupon', res.error);
+      }
+    }
+
+    function removeCoupon() {
+      Coupon.remove();
+      renderCart();
+      Notify.info('Coupon removed', '');
+    }
+
+    renderCart();
+
+    document.addEventListener('cartUpdated', renderCart);
+    initApp();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ShopNova Seller Portal. Manage your shop inventory, review sales performance, print labels, and fulfill orders.">
+  <title>Seller Dashboard — ShopNova</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .seller-page {
+      padding: var(--space-8) 0 var(--space-16);
+      min-height: calc(100vh - 450px);
+    }
+
+    .seller-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: var(--space-6);
+      align-items: start;
+    }
+
+    /* Seller Profile Header */
+    .seller-profile-card {
+      background: linear-gradient(135deg, rgba(236,72,153,0.1), rgba(255,107,53,0.1));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      text-align: center;
+      margin-bottom: var(--space-6);
+    }
+
+    .seller-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: var(--radius-full);
+      background: var(--grad-orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: white;
+      margin: 0 auto var(--space-4);
+      box-shadow: 0 8px 25px rgba(255,107,53,0.3);
+    }
+
+    .seller-store-name {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+
+    .seller-store-rating {
+      font-size: var(--text-xs);
+      color: var(--brand-gold);
+      margin-bottom: var(--space-4);
+    }
+
+    .seller-badges {
+      display: inline-flex;
+      background: rgba(255,255,255,0.05);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      border: 1px solid var(--glass-border);
+    }
+
+    /* Navigation */
+    .seller-nav {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .seller-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .seller-nav-item:hover,
+    .seller-nav-item.active {
+      background: rgba(255, 107, 53, 0.1);
+      color: var(--brand-orange);
+      box-shadow: inset 3px 0 0 var(--brand-orange);
+    }
+
+    /* Content wrapper */
+    .seller-content-panel {
+      background: var(--bg-700);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 800;
+      margin-bottom: var(--space-6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Metric grids */
+    .seller-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+
+    .seller-stat-card {
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4) var(--space-5);
+      position: relative;
+    }
+
+    .seller-stat-card-title {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .seller-stat-card-val {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: 800;
+    }
+
+    /* Interactive lists */
+    .seller-orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      margin-top: var(--space-4);
+    }
+
+    .seller-order-item {
+      background: var(--bg-600);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+    }
+
+    .seller-order-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .seller-order-title {
+      font-weight: 700;
+      font-size: var(--text-sm);
+    }
+
+    .seller-order-meta {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+    }
+
+    .seller-order-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    /* Brand Selector */
+    .brand-selector-wrap {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+    }
+
+    .brand-select {
+      background: var(--bg-500);
+      border: 1px solid var(--glass-border);
+      color: var(--text-primary);
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    @media (max-width: 1024px) {
+      .seller-layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="seller-page">
+    <div class="container">
+      
+      <div class="seller-layout">
+        
+        <!-- Sidebar and store details -->
+        <aside>
+          <div class="seller-profile-card animate-fadeIn">
+            <div class="seller-avatar" id="store-avatar">S</div>
+            <div class="seller-store-name" id="store-name">Sony Store</div>
+            <div class="seller-store-rating" id="store-rating">★ 4.8 (12,420 Reviews)</div>
+            <span class="seller-badges">✓ Verified Seller</span>
+          </div>
+
+          <div class="seller-nav">
+            <div class="seller-nav-item ${activeTab === 'dashboard' ? 'active' : ''}" id="nav-dashboard" onclick="switchTab('dashboard')">📈 Dashboard</div>
+            <div class="seller-nav-item ${activeTab === 'products' ? 'active' : ''}" id="nav-products" onclick="switchTab('products')">🏷️ My Products</div>
+            <div class="seller-nav-item ${activeTab === 'orders' ? 'active' : ''}" id="nav-orders" onclick="switchTab('orders')">📦 Shipments</div>
+          </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <section class="seller-content-panel animate-fadeIn" id="seller-main-content">
+          <!-- Populated dynamically -->
+        </section>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('navbar-container').innerHTML = buildNavbar();
+    document.getElementById('footer-container').innerHTML = buildFooter();
+
+    // Setup local state caches
+    const PRODUCT_STORAGE_KEY = 'shopnova_admin_products';
+    const ORDER_STORAGE_KEY = 'shopnova_orders';
+
+    function getSellerProducts() {
+      let saved = localStorage.getItem(PRODUCT_STORAGE_KEY);
+      if (!saved) {
+        localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(SHOPNOVA_DATA.products));
+        return SHOPNOVA_DATA.products;
+      }
+      return JSON.parse(saved);
+    }
+
+    function saveSellerProducts(prods) {
+      localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(prods));
+    }
+
+    function getSellerOrders() {
+      let saved = localStorage.getItem(ORDER_STORAGE_KEY);
+      if (!saved) {
+        localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(SHOPNOVA_DATA.demoOrders));
+        return SHOPNOVA_DATA.demoOrders;
+      }
+      return JSON.parse(saved);
+    }
+
+    function saveSellerOrders(ords) {
+      localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(ords));
+    }
+
+    // List of active brands/sellers in the system
+    const SELLER_BRANDS = ['Sony', 'Apple', 'Samsung', 'Nike', 'Logitech'];
+    let selectedBrand = SELLER_BRANDS[0];
+    let activeTab = 'dashboard';
+
+    // Update Store details when Brand changes
+    function updateStoreProfile() {
+      document.getElementById('store-name').textContent = `${selectedBrand} Store`;
+      document.getElementById('store-avatar').textContent = selectedBrand.charAt(0);
+      
+      // Calculate rating based on brand products
+      const prods = getSellerProducts().filter(p => p.brand.toLowerCase() === selectedBrand.toLowerCase());
+      if (prods.length > 0) {
+        const avgRating = (prods.reduce((s, p) => s + p.rating, 0) / prods.length).toFixed(1);
+        const totalReviews = prods.reduce((s, p) => s + p.reviewCount, 0);
+        document.getElementById('store-rating').textContent = `★ ${avgRating} (${totalReviews.toLocaleString()} Reviews)`;
+      } else {
+        document.getElementById('store-rating').textContent = `★ 5.0 (0 Reviews)`;
+      }
+    }
+
+    function switchTab(tabName) {
+      activeTab = tabName;
+      
+      // Toggle nav highlights
+      document.querySelectorAll('.seller-nav-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(`nav-${tabName}`);
+      if (activeEl) activeEl.classList.add('active');
+
+      renderSellerWorkspace();
+    }
+
+    function changeBrand(val) {
+      selectedBrand = val;
+      updateStoreProfile();
+      renderSellerWorkspace();
+    }
+
+    function renderSellerWorkspace() {
+      const panel = document.getElementById('seller-main-content');
+      const allProducts = getSellerProducts();
+      const allOrders = getSellerOrders();
+
+      // Filter products belonging to this seller
+      const myProducts = allProducts.filter(p => p.brand.toLowerCase() === selectedBrand.toLowerCase());
+
+      // Filter orders containing items belonging to this seller
+      const myOrders = allOrders.filter(order => 
+        order.items.some(item => {
+          const prod = allProducts.find(p => p.id === item.productId);
+          return prod && prod.brand.toLowerCase() === selectedBrand.toLowerCase();
+        })
+      );
+
+      // Build workspace depending on tab
+      if (activeTab === 'dashboard') {
+        const revenue = myProducts.reduce((acc, p) => acc + (p.sold || 10) * p.price, 0);
+        const lowStockCount = myProducts.filter(p => p.stock <= 5).length;
+        const totalSold = myProducts.reduce((acc, p) => acc + (p.sold || 10), 0);
+
+        panel.innerHTML = `
+          <div class="section-title">
+            <h2>Seller Performance Overview</h2>
+            <div class="brand-selector-wrap">
+              <span>View Brand:</span>
+              <select class="brand-select" onchange="changeBrand(this.value)">
+                ${SELLER_BRANDS.map(b => `<option value="${b}" ${selectedBrand === b ? 'selected' : ''}>${b}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="seller-stats-grid">
+            <div class="seller-stat-card" style="border-left: 4px solid var(--brand-orange)">
+              <div class="seller-stat-card-title">Simulated Earnings</div>
+              <div class="seller-stat-card-val">${formatPrice(revenue)}</div>
+            </div>
+            <div class="seller-stat-card" style="border-left: 4px solid var(--brand-accent)">
+              <div class="seller-stat-card-title">Total Units Sold</div>
+              <div class="seller-stat-card-val">${totalSold} units</div>
+            </div>
+            <div class="seller-stat-card" style="border-left: 4px solid var(--brand-primary)">
+              <div class="seller-stat-card-title">Total Products</div>
+              <div class="seller-stat-card-val">${myProducts.length} listings</div>
+            </div>
+            <div class="seller-stat-card" style="border-left: 4px solid var(--brand-secondary)">
+              <div class="seller-stat-card-title">Low Stock items</div>
+              <div class="seller-stat-card-val">${lowStockCount} items</div>
+            </div>
+          </div>
+
+          <!-- Quick Actions / Performance summary -->
+          <div style="background:var(--bg-600); border:1px solid var(--glass-border); border-radius:var(--radius-lg); padding:var(--space-6); margin-top:var(--space-6)">
+            <h3>Tips for Increasing Store Sales</h3>
+            <ul style="color:var(--text-secondary); line-height:1.6; margin-top:var(--space-2); padding-left:20px">
+              <li>Ensure your stock values are up-to-date in the <strong>My Products</strong> tab to prevent overselling.</li>
+              <li>Fulfill orders within 24 hours in the <strong>Shipments</strong> tab to maintain your Top Seller rating status.</li>
+              <li>Offer competitive pricing compared to default listings to increase your conversion rates.</li>
+            </ul>
+          </div>
+        `;
+      } 
+      
+      else if (activeTab === 'products') {
+        panel.innerHTML = `
+          <div class="section-title">
+            <h2>Products Inventory</h2>
+            <span style="font-size:12px; color:var(--text-muted)">Manage pricing and stock details for <strong>${selectedBrand}</strong>.</span>
+          </div>
+
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Subcategory</th>
+                  <th>Current Price</th>
+                  <th>Stock Count</th>
+                  <th>Fulfillment Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${myProducts.map(p => `
+                  <tr>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.subcategory || p.category}</td>
+                    <td>
+                      <input type="number" class="quick-input" style="width:90px" value="${p.price}" 
+                        onchange="updateProductPrice(${p.id}, this.value)">
+                    </td>
+                    <td>
+                      <input type="number" class="quick-input" value="${p.stock}" 
+                        onchange="updateProductStock(${p.id}, this.value)">
+                    </td>
+                    <td>
+                      ${p.stock > 10 ? '<span style="color:var(--brand-accent)">✓ Healthy</span>' : 
+                        p.stock > 0 ? '<span style="color:var(--brand-orange)">⚠️ Low Stock</span>' : 
+                        '<span style="color:var(--brand-secondary)">✕ Out of Stock</span>'}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } 
+      
+      else if (activeTab === 'orders') {
+        // Filter orders that have pending shipments for this brand
+        const pendingOrders = myOrders.filter(o => o.status === 'processing');
+
+        panel.innerHTML = `
+          <div class="section-title">
+            <h2>Order Dispatch & Shipments</h2>
+          </div>
+
+          <h3>Pending Dispatch (${pendingOrders.length})</h3>
+          <div class="seller-orders-list">
+            ${pendingOrders.map(o => {
+              const brandItems = o.items.filter(item => {
+                const p = allProducts.find(x => x.id === item.productId);
+                return p && p.brand.toLowerCase() === selectedBrand.toLowerCase();
+              });
+
+              const itemsSummary = brandItems.map(i => {
+                const product = allProducts.find(x => x.id === i.productId);
+                return `${product ? product.name : `Product ID: ${i.productId}`} (x${i.qty})`;
+              }).join(', ');
+
+              return `
+                <div class="seller-order-item">
+                  <div class="seller-order-details">
+                    <div class="seller-order-title">Order ${o.id}</div>
+                    <div class="seller-order-meta">Customer Address: <strong>${o.address}</strong></div>
+                    <div class="seller-order-meta">Items: <strong>${itemsSummary}</strong></div>
+                  </div>
+                  <div class="seller-order-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="printShippingLabel('${o.id}')">🖨️ Label</button>
+                    <button class="btn btn-primary btn-sm" onclick="shipSellerOrder('${o.id}')">🚚 Ship Now</button>
+                  </div>
+                </div>
+              `;
+            }).join('') || '<div style="color:var(--text-muted); text-align:center; padding:var(--space-6)">No orders waiting for dispatch! All orders fulfilled.</div>'}
+          </div>
+
+          <h3 style="margin-top:var(--space-8)">Fulfilled / Shipped Items</h3>
+          <div class="seller-orders-list">
+            ${myOrders.filter(o => o.status !== 'processing').map(o => {
+              const brandItems = o.items.filter(item => {
+                const p = allProducts.find(x => x.id === item.productId);
+                return p && p.brand.toLowerCase() === selectedBrand.toLowerCase();
+              });
+
+              const itemsSummary = brandItems.map(i => {
+                const product = allProducts.find(x => x.id === i.productId);
+                return `${product ? product.name : `Product ID: ${i.productId}`} (x${i.qty})`;
+              }).join(', ');
+
+              return `
+                <div class="seller-order-item" style="opacity: 0.65">
+                  <div class="seller-order-details">
+                    <div class="seller-order-title">Order ${o.id}</div>
+                    <div class="seller-order-meta">Status: <strong style="text-transform:uppercase; color:var(--brand-accent)">${o.status}</strong></div>
+                    <div class="seller-order-meta">Items: ${itemsSummary}</div>
+                  </div>
+                  <div>
+                    <a href="order-tracking.html?id=${o.id}" class="btn btn-ghost btn-sm">🔍 Track</a>
+                  </div>
+                </div>
+              `;
+            }).join('') || '<div style="color:var(--text-muted); text-align:center; padding:var(--space-6)">No fulfilled shipments yet.</div>'}
+          </div>
+        `;
+      }
+    }
+
+    function updateProductPrice(id, val) {
+      const prods = getSellerProducts();
+      const p = prods.find(item => item.id === id);
+      if (p) {
+        p.price = parseFloat(val) || 0;
+        saveSellerProducts(prods);
+        
+        // Sync to Supabase
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+          supabaseClient.from('products').update({ price: p.price }).eq('id', id)
+            .then(({ error }) => { if (error) console.error(error); });
+        }
+        
+        Notify.info('Price Updated', `Price of ${p.name} updated to ${formatPrice(p.price)}`);
+      }
+    }
+
+    function updateProductStock(id, val) {
+      const prods = getSellerProducts();
+      const p = prods.find(item => item.id === id);
+      if (p) {
+        p.stock = parseInt(val) || 0;
+        saveSellerProducts(prods);
+        
+        // Sync to Supabase
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+          supabaseClient.from('products').update({ stock: p.stock }).eq('id', id)
+            .then(({ error }) => { if (error) console.error(error); });
+        }
+        
+        Notify.info('Stock Level Saved', `${p.name} stock level changed to ${p.stock}`);
+      }
+    }
+
+    function printShippingLabel(orderId) {
+      alert(`Printing label for order ${orderId} via ShopNova Courier service...`);
+      Notify.success('Label Printed', `Shipping barcoded label downloaded for order #${orderId}`);
+    }
+
+    function shipSellerOrder(orderId) {
+      const ords = getSellerOrders();
+      const o = ords.find(order => order.id === orderId);
+      if (o) {
+        o.status = 'shipped';
+        saveSellerOrders(ords);
+        
+        // Sync to Supabase
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+          supabaseClient.from('orders').update({ status: 'shipped' }).eq('id', orderId)
+            .then(({ error }) => { if (error) console.error(error); });
+        }
+        
+        Notify.success('Item Dispatched!', `Order ${orderId} status set to SHIPPED. Courier notified.`);
+        renderSellerWorkspace();
+      }
+    }
+
+    // Init
+    updateStoreProfile();
+    switchTab('dashboard');
+    initApp();
+  </script>
+</body>
+</html>

@@ -17,7 +17,9 @@ const multer  = require('multer');
 const path    = require('path');
 const fs      = require('fs');
 
-const UPLOADS_DIR  = path.join(__dirname, '..', 'uploads');
+const UPLOADS_DIR = process.env.VERCEL 
+  ? path.join('/tmp', 'uploads')
+  : path.join(__dirname, '..', 'uploads');
 const MAX_SIZE_MB  = 5;
 const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 

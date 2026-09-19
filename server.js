@@ -33,7 +33,8 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));           // Serves all HTML/CSS/JS
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploaded files
+const staticUploadsDir = process.env.VERCEL ? path.join('/tmp', 'uploads') : path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(staticUploadsDir)); // Serve uploaded files
 
 /* ── JWT helpers ─────────────────────────────────────────── */
 function signToken(userId) {

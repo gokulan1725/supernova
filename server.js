@@ -178,7 +178,9 @@ const INITIAL_DATA = {
   ]
 };
 
-const DB_PATH = path.join(__dirname, 'data', 'db.json');
+const DB_PATH = process.env.VERCEL 
+  ? path.join('/tmp', 'db.json') 
+  : path.join(__dirname, 'data', 'db.json');
 
 function readDB() {
   try {

@@ -1191,47 +1191,52 @@ app.post('/api/orders/confirm-reservation', (req, res) => {
 });
 
 /* ── Start server ────────────────────────────────────────── */
-app.listen(PORT, () => {
-  const line = '═'.repeat(44);
-  console.log('');
-  console.log(`🚀 ╔${line}╗`);
-  console.log(`   ║  ShopNova Backend  v2.0 — JWT + bcrypt     ║`);
-  console.log(`   ║  http://localhost:${PORT}                       ║`);
-  console.log(`   ╚${line}╝`);
-  console.log('');
-  console.log('📁 Database  :', DB_PATH);
-  console.log('🔐 Auth      : JWT (', JWT_EXPIRES_IN, 'expiry)');
-  console.log('☁️  Supabase  : Enabled with local fallback');
-  console.log('');
-  console.log('API Endpoints:');
-  console.log('  GET  /api/health');
-  console.log('  GET  /api/products          POST /api/products');
-  console.log('  GET  /api/products/:id      PUT  /api/products/:id');
-  console.log('  DEL  /api/products/:id');
-  console.log('  GET  /api/products/:id/reviews');
-  console.log('  POST /api/products/:id/reviews');
-  console.log('  GET  /api/categories        GET  /api/banners');
-  console.log('  POST /api/auth/login        POST /api/auth/register');
-  console.log('  GET  /api/users/me          PUT  /api/users/:id');
-  console.log('  GET  /api/orders            POST /api/orders');
-  console.log('  GET  /api/orders/:id        PUT  /api/orders/:id');
-  console.log('  GET  /api/notifications');
-  console.log('  POST /api/db/reset          GET  /api/db/export');
-  console.log('');
-  console.log('New Route Modules:');
-  console.log('  /api/wishlist/*             — Wishlist management');
-  console.log('  /api/cart/*                 — Server-side cart');
-  console.log('  /api/search, /api/search/autocomplete');
-  console.log('  /api/coupons/*              — Coupon CRUD + validate');
-  console.log('  /api/admin/analytics/*      — Revenue, inventory, customers');
-  console.log('  /api/seller/*               — Seller dashboard & products');
-  console.log('  /api/shipping/*             — Rates, tracking, addresses');
-  console.log('  /api/recommendations/*      — Similar, trending, for-you');
-  console.log('  /api/payments/*             — Stripe checkout, webhooks, status');
-  console.log('  /api/email/*               — Password reset, alerts, test');
-  console.log('  /api/flash-deals/*         — Flash deals with countdown timer');
-  console.log('  /api/returns/*             — Returns & refund workflow');
-  console.log('  /api/loyalty/*             — Points, tiers, redeem coupons');
-  console.log('  /api/uploads/*             — Product/avatar image uploads');
-  console.log('');
-});
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    const line = '═'.repeat(44);
+    console.log('');
+    console.log(`🚀 ╔${line}╗`);
+    console.log(`   ║  ShopNova Backend  v2.0 — JWT + bcrypt     ║`);
+    console.log(`   ║  http://localhost:${PORT}                       ║`);
+    console.log(`   ╚${line}╝`);
+    console.log('');
+    console.log('📁 Database  :', DB_PATH);
+    console.log('🔐 Auth      : JWT (', JWT_EXPIRES_IN, 'expiry)');
+    console.log('☁️  Supabase  : Enabled with local fallback');
+    console.log('');
+    console.log('API Endpoints:');
+    console.log('  GET  /api/health');
+    console.log('  GET  /api/products          POST /api/products');
+    console.log('  GET  /api/products/:id      PUT  /api/products/:id');
+    console.log('  DEL  /api/products/:id');
+    console.log('  GET  /api/products/:id/reviews');
+    console.log('  POST /api/products/:id/reviews');
+    console.log('  GET  /api/categories        GET  /api/banners');
+    console.log('  POST /api/auth/login        POST /api/auth/register');
+    console.log('  GET  /api/users/me          PUT  /api/users/:id');
+    console.log('  GET  /api/orders            POST /api/orders');
+    console.log('  GET  /api/orders/:id        PUT  /api/orders/:id');
+    console.log('  GET  /api/notifications');
+    console.log('  POST /api/db/reset          GET  /api/db/export');
+    console.log('');
+    console.log('New Route Modules:');
+    console.log('  /api/wishlist/*             — Wishlist management');
+    console.log('  /api/cart/*                 — Server-side cart');
+    console.log('  /api/search, /api/search/autocomplete');
+    console.log('  /api/coupons/*              — Coupon CRUD + validate');
+    console.log('  /api/admin/analytics/*      — Revenue, inventory, customers');
+    console.log('  /api/seller/*               — Seller dashboard & products');
+    console.log('  /api/shipping/*             — Rates, tracking, addresses');
+    console.log('  /api/recommendations/*      — Similar, trending, for-you');
+    console.log('  /api/payments/*             — Stripe checkout, webhooks, status');
+    console.log('  /api/email/*               — Password reset, alerts, test');
+    console.log('  /api/flash-deals/*         — Flash deals with countdown timer');
+    console.log('  /api/returns/*             — Returns & refund workflow');
+    console.log('  /api/loyalty/*             — Points, tiers, redeem coupons');
+    console.log('  /api/uploads/*             — Product/avatar image uploads');
+    console.log('');
+  });
+}
+
+// Export the app for Vercel
+module.exports = app;
